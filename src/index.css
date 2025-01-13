@@ -120,3 +120,8 @@ button:hover {
 .step-indicator.active {
   background: #4caf50;
 }
+
+#step-progress {
+  margin-top: 20px;
+  text-align: center;
+}

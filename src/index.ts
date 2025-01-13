@@ -1,77 +1,83 @@
 import { validateField, validateForm, addCustomValidationRules } from './validation';
 import { initializeStepForm } from './step';
+import { FormousOptions } from './types';
 
-type FormousOptions = {
-  formSelector: string;
-  customRules?: { [key: string]: { validate: (value: string, field: HTMLInputElement) => boolean; message: (field: HTMLInputElement) => string } };
-  enableWebflow?: boolean; // Webflowバリデーションを有効にするフラグ
-};
-
+// Formous関数 - フォームバリデーションとステップ管理の初期化
 export function Formous(options: FormousOptions) {
-  const { formSelector, customRules, enableWebflow } = options;
-  const form = document.querySelector(formSelector) as HTMLFormElement;
+  const { formSelector, customRules, enableWebflow, enableConfirmationPage } = options; // オプションを分解
+  const form = document.querySelector(formSelector) as HTMLFormElement; // フォームをセレクタで取得
 
   if (!form) {
+    // 指定されたセレクタに一致するフォームが見つからない場合、エラーをスロー
     throw new Error(`Form with selector "${formSelector}" not found.`);
   }
 
   // カスタムルールを登録
   if (customRules) {
-    addCustomValidationRules(customRules);
+    addCustomValidationRules(customRules); // ユーザー定義のバリデーションルールをグローバルに登録
   }
 
+  // バリデーションを初期化する関数
   const initializeValidation = () => {
-    const fields = form.querySelectorAll('input[data-validation]');
+    const fields = form.querySelectorAll('input, textarea, select'); // 全ての入力フィールドを取得
     fields.forEach((field) => {
-      field.addEventListener('input', () => validateField(field as HTMLInputElement));
-      field.addEventListener('blur', () => validateField(field as HTMLInputElement));
+      field.addEventListener('input', () => validateField(field as HTMLInputElement, options));
+      field.addEventListener('blur', () => validateField(field as HTMLInputElement, options));
     });
 
     form.addEventListener('submit', (event) => {
-      if (!validateForm(form)) {
-        event.preventDefault();
+      if (!validateForm(form, options)) {
+        event.preventDefault(); // 無効な場合送信を中止
         alert('Please fix the errors before submitting.');
       }
     });
   };
 
+
+  // Webflowのバリデーションを制御する関数
   const initializeWebflowValidation = () => {
-    if (!enableWebflow) return;
+    if (!enableWebflow) return; // Webflowバリデーションが無効の場合は終了
 
     // Webflow独自のスクリプトを無効化
     form.setAttribute('novalidate', 'true');
 
     // Webflowのsubmitイベントを制御
     form.addEventListener('submit', (event) => {
-      const isValid = validateForm(form);
+      const isValid = validateForm(form, options); // バリデーションを実行
       if (!isValid) {
         console.log('バリデーション失敗: フォーム送信を中止');
-        event.preventDefault();
-        event.stopPropagation();
+        event.preventDefault(); // バリデーションエラーがある場合、送信を中止
+        event.stopPropagation(); // イベントの伝播を停止
       } else {
         console.log('バリデーション成功: Webflow送信を許可');
       }
     });
 
-    // リアルタイムバリデーションの設定
-    const fields = form.querySelectorAll('input, textarea, select');
+    // リアルタイムバリデーションを設定
+    const fields = form.querySelectorAll('input, textarea, select'); // フォーム内の全てのフィールドを取得
     fields.forEach((field) => {
-      field.addEventListener('input', () => validateField(field as HTMLInputElement));
-      field.addEventListener('change', () => validateField(field as HTMLInputElement));
+      // 入力時や変更時にバリデーションを実行
+      field.addEventListener('input', () => validateField(field as HTMLInputElement, options));
+      field.addEventListener('change', () => validateField(field as HTMLInputElement, options));
     });
   };
 
-  // 初期化
+  // バリデーションの初期化
   initializeValidation();
-  const stepForm = initializeStepForm(form);
+
+  // ステップフォームの初期化に確認ページのオプションを渡す
+  const stepForm = initializeStepForm(form, enableConfirmationPage, options);
+
+
+  // Webflowバリデーションの初期化
   initializeWebflowValidation();
 
   // 必要であれば公開メソッドを返す
   return {
-    refreshValidation: initializeValidation,
-    ...stepForm,
+    refreshValidation: initializeValidation, // バリデーションを再初期化するメソッド
+    ...stepForm, // ステップ管理のメソッド
   };
 }
 
-// グローバルスコープに登録
+// グローバルスコープにFormousを登録（必要に応じて削除可能）
 (window as any).Formous = Formous;
