@@ -17,6 +17,50 @@ Formousは、マルチステップフォームを簡単に実装できるTypeScr
 npm install formous
 ```
 
+## 使用方法
+
+Formousは以下の形式で提供されています：
+
+- **ES Modules** (`index.js`): モダンな開発環境向け
+- **CommonJS** (`index.cjs`): Node.js環境向け
+- **UMD** (`index.umd.cjs`): ブラウザで直接使用する場合向け
+
+### ES Modules (推奨)
+
+```javascript
+import { Formous } from 'formous';
+
+Formous({
+  formSelector: '#my-form',
+  // オプション
+});
+```
+
+### CommonJS
+
+```javascript
+const { Formous } = require('formous');
+
+Formous({
+  formSelector: '#my-form',
+  // オプション
+});
+```
+
+### ブラウザで直接使用
+
+```html
+<!-- 最新版 -->
+<script src="https://cdn.jsdelivr.net/gh/ousllc/formous@latest/dist/index.umd.cjs"></script>
+
+<!-- 特定のバージョン -->
+<script src="https://cdn.jsdelivr.net/gh/ousllc/formous@v0.1.0-beta.1/dist/index.umd.cjs"></script>
+```
+
+### 型定義
+
+TypeScriptユーザー向けに型定義ファイル（`.d.ts`）も提供されています。
+これらは自動的にインポートされ、IDEでの型チェックとコード補完が有効になります。
 
 ## 基本的な使用方法
 

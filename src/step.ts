@@ -133,7 +133,6 @@ export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage
 
     const handleIndicatorClick = (index: number) => {
         if (index > currentStepIndex && !validateCurrentStep()) {
-            alert('Please fix the errors before proceeding.');
             return;
         }
         showStep(index);

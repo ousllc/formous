@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Step Form | Formous</title>
+  <link rel="stylesheet" href="../src/style.css" />
+  <script type="module" src="../src/index.ts"></script>
+</head>
+
+<body>
+  <div class="container">
+    <nav class="nav-links">
+      <a href="../index.html" class="nav-link">← メインページに戻る</a>
+    </nav>
+
+    <form id="step-form" novalidate>
+      <!-- Progress Bar -->
+      <div id="progress-container">
+        <div id="progress-bar">
+          <div id="progress-fill"></div>
+        </div>
+        <div id="step-indicators">
+          <span class="step-indicator">1</span>
+          <span class="step-indicator">2</span>
+          <span class="step-indicator">3</span>
+        </div>
+      </div>
+
+      <!-- Step 1: 基本情報 -->
+      <div class="step active">
+        <h4>基本情報</h4>
+        
+        <!-- First Name -->
+        <div>
+          <label for="firstName">First Name:</label>
+          <input type="text" id="firstName" name="firstName" minlength="2" maxlength="30" required />
+          <div data-validation="error" data-validation-type="required">必須項目です</div>
+          <div data-validation="error" data-validation-type="minlength">2文字以上で入力してください</div>
+        </div>
+
+        <!-- Last Name -->
+        <div>
+          <label for="lastName">Last Name:</label>
+          <input type="text" id="lastName" name="lastName" minlength="2" maxlength="30" required />
+          <div data-validation="error" data-validation-type="required">必須項目です</div>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required />
+          <div data-validation="error" data-validation-type="required">必須項目です</div>
+          <div data-validation="error" data-validation-type="email">正しいメールアドレスを入力してください</div>
+        </div>
+
+        <!-- Confirm Email -->
+        <div>
+          <label for="confirmEmail">Confirm Email:</label>
+          <input type="email" id="confirmEmail" name="confirmEmail" data-validation="equals" data-equals="email" required />
+          <div data-validation="error" data-validation-type="equals">メールアドレスが一致しません</div>
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" data-validation="password" required />
+          <div data-validation="error" data-validation-type="password">8文字以上で、英字と数字を含める必要があります</div>
+        </div>
+
+        <button type="button" data-action="next">Next</button>
+      </div>
+
+      <!-- Step 2: 興味・関心 -->
+      <div class="step">
+        <h4>興味・関心</h4>
+
+        <!-- 開発分野 -->
+        <fieldset data-validation="checkbox-group" data-group-min="2" data-group-max="5">
+          <legend>興味のある開発分野（2つ以上5つまで選択）：</legend>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="dev-frontend" name="development" value="frontend">
+            <label for="dev-frontend">フロントエンド</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="dev-backend" name="development" value="backend">
+            <label for="dev-backend">バックエンド</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="dev-mobile" name="development" value="mobile">
+            <label for="dev-mobile">モバイル</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="dev-ai" name="development" value="ai">
+            <label for="dev-ai">AI/機械学習</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="dev-devops" name="development" value="devops">
+            <label for="dev-devops">DevOps</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="dev-security" name="development" value="security">
+            <label for="dev-security">セキュリティ</label>
+          </div>
+          <div data-validation="error" data-validation-type="checkbox-group">
+            2つ以上5つまでの項目を選択してください
+          </div>
+        </fieldset>
+
+        <button type="button" data-action="previous">Previous</button>
+        <button type="button" data-action="next">Next</button>
+      </div>
+
+      <!-- Step 3: その他情報 -->
+      <div class="step">
+        <h4>その他情報</h4>
+
+        <!-- URL -->
+        <div>
+          <label for="portfolio">Portfolio URL:</label>
+          <input type="url" id="portfolio" name="portfolio" data-validation="url" />
+          <div data-validation="error" data-validation-type="url">有効なURLを入力してください</div>
+        </div>
+
+        <!-- 電話番号 -->
+        <div>
+          <label for="phone">Phone:</label>
+          <input type="tel" id="phone" name="phone" data-validation="phone" required />
+          <div data-validation="error" data-validation-type="phone">有効な電話番号を入力してください</div>
+        </div>
+
+        <!-- 郵便番号 -->
+        <div>
+          <label for="postalCode">郵便番号:</label>
+          <input type="text" id="postalCode" name="postalCode" data-validation="postalCode" required />
+          <div data-validation="error" data-validation-type="postalCode">有効な郵便番号を入力してください</div>
+        </div>
+
+        <!-- 生年月日 -->
+        <div>
+          <label for="birthdate">生年月日:</label>
+          <input type="date" id="birthdate" name="birthdate" data-validation="date" required />
+          <div data-validation="error" data-validation-type="date">有効な日付を入力してください</div>
+        </div>
+
+        <!-- 時間 -->
+        <div>
+          <label for="preferredTime">希望連絡時間:</label>
+          <input type="time" id="preferredTime" name="preferredTime" data-validation="time" required />
+          <div data-validation="error" data-validation-type="time">有効な時間を入力してください</div>
+        </div>
+
+        <button type="button" data-action="previous">Previous</button>
+        <button type="button" data-action="confirm">確認する</button>
+      </div>
+
+      <!-- 確認ページ -->
+      <div class="step" data-confirmation="true">
+        <h3>Confirmation</h3>
+        
+        <!-- Step 1の確認 -->
+        <div class="confirmation-section" data-step="1">
+          <h4>基本情報</h4>
+          <p>First Name: <span data-confirm="firstName"></span></p>
+          <p>Last Name: <span data-confirm="lastName"></span></p>
+          <p>Email: <span data-confirm="email"></span></p>
+          <button type="button" data-action="edit" data-target-step="1">編集する</button>
+        </div>
+
+        <!-- Step 2の確認 -->
+        <div class="confirmation-section" data-step="2">
+          <h4>興味・関心</h4>
+          <p>開発分野: <span data-confirm="development"></span></p>
+          <p>学習方法: <span data-confirm="learning"></span></p>
+          <button type="button" data-action="edit" data-target-step="2">編集する</button>
+        </div>
+
+        <!-- Step 3の確認 -->
+        <div class="confirmation-section" data-step="3">
+          <h4>その他情報</h4>
+          <p>Portfolio URL: <span data-confirm="portfolio"></span></p>
+          <p>Phone: <span data-confirm="phone"></span></p>
+          <p>郵便番号: <span data-confirm="postalCode"></span></p>
+          <p>生年月日: <span data-confirm="birthdate"></span></p>
+          <p>希望連絡時間: <span data-confirm="preferredTime"></span></p>
+          <button type="button" data-action="edit" data-target-step="3">編集する</button>
+        </div>
+
+        <button type="button" data-action="previous">Back</button>
+        <button type="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Formous({
+        formSelector: '#step-form',
+        enableConfirmationPage: true,
+        confirmationOptions: {
+          delimiter: '/'
+        },
+        validationMessages: {
+          required: '必須項目です',
+          email: 'メールアドレスの形式が正しくありません',
+          minLength: (field) => `${field.getAttribute('minlength')}文字以上で入力してください`,
+          maxLength: (field) => `${field.getAttribute('maxlength')}文字以下で入力してください`
+        },
+        customRules: {
+          password: {
+            validate: (value) => /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(value),
+            message: () => 'パスワードは8文字以上で、英字と数字を含める必要があります'
+          },
+          postalCode: {
+            validate: (value) => /^\d{3}-?\d{4}$/.test(value),
+            message: () => '正しい郵便番号の形式で入力してください'
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html> 
