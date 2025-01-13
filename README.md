@@ -434,9 +434,4 @@ MIT
 
 ## 作者
 
-Your Name (@yourusername)
-
-## 謝辞
-
-このプロジェクトは以下のライブラリを参考にしています：
-- [example-library](https://github.com/example/library)
+オース　Daishi Arakawa (@ousllc)
