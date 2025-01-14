@@ -18,7 +18,8 @@ export default defineConfig({
         globals: {
           lit: 'Lit'
         },
-      },
-    },
-  },
+        inlineDynamicImports: false
+      }
+    }
+  }
 });
