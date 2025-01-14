@@ -13,7 +13,7 @@ export function addCustomValidationRules(customRules: { [key: string]: Validatio
 }
 
 // 単一のフィールドをバリデートする関数
-export function validateField(field: HTMLInputElement, options?: FormousOptions): boolean {
+export function validateField(field: HTMLInputElement, options?: FormousOptions, showGlobalErrors: boolean = false): boolean {
     const fieldset = field.closest('fieldset[data-validation]');
     let isValid = true;
     let errorsByType: { [key: string]: string | ((field: HTMLInputElement) => string) } = {};
@@ -72,10 +72,22 @@ export function validateField(field: HTMLInputElement, options?: FormousOptions)
         updateErrorElements(errorElements, errorsByType as { [key: string]: string }, field, options);
     }
 
+    // data-validation-for属性を持つ離れた場所のエラー要素を探して更新
     const fieldName = field.getAttribute('name');
     if (fieldName) {
-        const globalErrorElements = document.querySelectorAll(`[data-validation-error="${fieldName}"]`);
-        updateErrorElements(globalErrorElements, errorsByType as { [key: string]: string }, field, options);
+        const remoteErrorElements = document.querySelectorAll(`[data-validation="error"][data-validation-for="${fieldName}"]`);
+        const globalErrorContainer = document.querySelector('[data-validation-error-global]');
+        
+        // グローバルエラーの表示制御
+        if (showGlobalErrors || globalErrorContainer?.classList.contains('active')) {
+            updateErrorElements(remoteErrorElements, errorsByType as { [key: string]: string }, field, options);
+        }
+
+        // グローバルエラーコンテナの表示制御
+        const hasVisibleErrors = Array.from(remoteErrorElements).some(
+            el => (el as HTMLElement).style.display === 'block'
+        );
+        globalErrorContainer?.classList.toggle('active', hasVisibleErrors);
     }
 
     return isValid;
@@ -134,15 +146,82 @@ function updateErrorElements(elements: NodeListOf<Element>, errorsByType: { [key
     });
 }
 
-// フォーム内のすべてのフィールドをバリデート
-export function validateForm(form: HTMLFormElement, options?: FormousOptions): boolean {
-    let isValid = true;
+/**
+ * スムーズスクロール機能を提供する関数
+ * @param element - スクロール対象のHTML要素
+ * @param options - スクロールのオプション設定
+ * - offset: スクロール位置の上部からのオフセット（デフォルト: 50px）
+ * - behavior: スクロールの動作（'smooth'または'auto'）
+ * - duration: スクロールアニメーションの時間（例: '0.5s'）
+ */
+export function smoothScroll(element: HTMLElement, options: FormousOptions['scrollOptions'] = {}) {
+    const {
+        offset = 50,
+        behavior = 'smooth',
+        duration = '0.5s'
+    } = options;
+
+    // CSSプロパティを一時的に設定してスクロール動作をカスタマイズ
+    document.documentElement.style.setProperty('scroll-behavior', behavior);
+    document.documentElement.style.setProperty('transition-duration', duration);
+    document.documentElement.style.setProperty('scroll-timeline-name', 'scroll');
+
+    // 要素の上部マージンを設定してスクロール位置を調整
+    element.style.scrollMargin = `${offset}px`;
+
+    // 要素まで滑らかにスクロール
+    element.scrollIntoView({
+        behavior,
+        block: 'nearest',  // 最も近い位置にスクロール
+        inline: 'nearest'
+    });
+
+    // スクロールアニメーション完了後の処理
+    setTimeout(() => {
+        // 一時的なCSSプロパティを削除
+        document.documentElement.style.removeProperty('scroll-behavior');
+        document.documentElement.style.removeProperty('transition-duration');
+        document.documentElement.style.removeProperty('scroll-timeline-name');
+
+        // スクロール完了後、少し遅延を入れてからフォーカスを設定
+        setTimeout(() => {
+            element.focus();
+        }, 2000);
+    }, parseFloat(duration) * 1000);
+}
+
+/**
+ * フォーム全体のバリデーションを行う関数
+ * @param form - バリデーション対象のフォーム要素
+ * @param options - バリデーションのオプション設定
+ * @returns boolean - バリデーション結果（true: 成功, false: 失敗）
+ */
+export function validateForm(form: HTMLFormElement, options: FormousOptions): boolean {
     const fields = form.querySelectorAll('input, textarea, select');
+    let isValid = true;
+    let firstErrorField: HTMLElement | null = null;
+
+    // 各フィールドのバリデーション
     fields.forEach((field) => {
-        if (!validateField(field as HTMLInputElement, options)) {
+        const fieldValid = validateField(field as HTMLInputElement, options, true);  // フォーム送信時はグローバルエラーを表示
+        if (!fieldValid) {
             isValid = false;
+            // 最初のエラーフィールドを記録（スクロール用）
+            if (!firstErrorField) {
+                firstErrorField = field as HTMLElement;
+            }
         }
     });
+
+    // エラーがある場合、最初のエラーフィールドまでスクロール
+    if (!isValid && firstErrorField) {
+        setTimeout(() => {
+            if (firstErrorField) {
+                smoothScroll(firstErrorField, options.scrollOptions);
+            }
+        }, 0);
+    }
+
     return isValid;
 }
 

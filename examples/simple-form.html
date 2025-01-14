@@ -78,16 +78,47 @@
       </div>
 
       <button type="submit">送信する</button>
+
+      <!-- グローバルエラーメッセージ -->
+      <div class="global-errors" data-validation-error-global>
+        <div data-validation="error" data-validation-type="required" data-validation-for="name">
+          名前は必須項目です
+        </div>
+        <div data-validation="error" data-validation-type="required" data-validation-for="email">
+          メールアドレスは必須項目です
+        </div>
+        <div data-validation="error" data-validation-type="email" data-validation-for="email">
+          正しいメールアドレスの形式で入力してください
+        </div>
+        <div data-validation="error" data-validation-type="required" data-validation-for="phone">
+          電話番号は必須項目です
+        </div>
+        <div data-validation="error" data-validation-type="checkbox-group" data-validation-for="interests">
+          興味のある分野を1つ以上選択してください
+        </div>
+        <div data-validation="error" data-validation-type="required" data-validation-for="message">
+          お問い合わせ内容は必須項目です
+        </div>
+      </div>
     </form>
   </div>
+
+  <style>
+    .global-errors {
+      margin-top: 20px;
+      padding: 15px;
+      border-top: 1px solid #ddd;
+    }
+  </style>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       Formous({
         formSelector: '#simple-form',
-        enableWebflow: true,
-        webflowOptions: {
-          preventSubmit: true
+        scrollOptions: {
+          offset: 50,
+          duration: '2s',
+          behavior: 'smooth'
         },
         validationMessages: {
           required: '必須項目です',

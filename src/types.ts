@@ -33,4 +33,10 @@ export type FormousOptions = {
             message: (field: HTMLInputElement) => string;
         };
     };
+    
+    scrollOptions?: {
+        offset?: number;
+        behavior?: 'auto' | 'smooth';
+        duration?: string;
+    };
 }; 

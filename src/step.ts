@@ -1,4 +1,4 @@
-import { validateField as importedValidateField, ValidationRules } from './validation';
+import { validateField, smoothScroll } from './validation';
 import { FormousOptions } from './types';
 
 // ステップフォームを初期化する関数
@@ -83,9 +83,8 @@ export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage
         );
 
         let isValid = true;
-
         fields.forEach((field) => {
-            if (!importedValidateField(field as HTMLInputElement, options)) {
+            if (!validateField(field as HTMLInputElement, options)) {
                 isValid = false;
             }
         });
@@ -120,7 +119,17 @@ export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage
     };
 
     const handleNext = () => {
-        if (validateCurrentStep() && currentStepIndex < steps.length - 1) {
+        const isValid = validateCurrentStep();
+        if (!isValid) {
+            const currentStep = steps[currentStepIndex];
+            const firstErrorField = currentStep.querySelector('input:invalid, textarea:invalid, select:invalid') as HTMLElement;
+            if (firstErrorField) {
+                smoothScroll(firstErrorField, options?.scrollOptions);
+            }
+            return;
+        }
+        
+        if (currentStepIndex < steps.length - 1) {
             showStep(currentStepIndex + 1);
         }
     };
@@ -166,7 +175,13 @@ export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage
     };
 }
 
-const customRule = ValidationRules['required'];
+const validationRules = {
+    required: {
+        message: 'This field is required'
+    }
+};
+
+const customRule = validationRules['required'];
 if (customRule) {
     console.log(`Custom rule found: ${customRule.message}`);
 }
