@@ -17,13 +17,22 @@ Formousは、フォームの実装を簡単にするTypeScriptライブラリで
 ### CDNを使用する場合
 
 ```html
+<!-- 最新版を使用 -->
 <script src="https://cdn.jsdelivr.net/npm/formous@latest/dist/formous.min.js"></script>
+
+<!-- または、特定のバージョンを指定 -->
+<script src="https://cdn.jsdelivr.net/npm/formous@v0.1.0-beta.6/dist/formous.min.js"></script>
 ```
+
+> 本番環境では、安定性を確保するために特定のバージョンを指定することをお勧めします。
 
 ### npmを使用する場合
 
 ```bash
 npm install formous
+
+# または、特定のバージョンを指定
+npm install formous@v0.1.0-beta.6
 ```
 
 ## 基本的な使い方
