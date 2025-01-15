@@ -18,10 +18,10 @@ Formousは、フォームの実装を簡単にするTypeScriptライブラリで
 
 ```html
 <!-- 最新版を使用 -->
-<script src="https://cdn.jsdelivr.net/npm/formous@latest/dist/formous.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/ousllc/formous@latest/dist/formous.min.js"></script>
 
 <!-- または、特定のバージョンを指定 -->
-<script src="https://cdn.jsdelivr.net/npm/formous@v0.1.0-beta.6/dist/formous.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/ousllc/formous@v0.1.0-beta.7/dist/formous.min.js"></script>
 ```
 
 > 本番環境では、安定性を確保するために特定のバージョンを指定することをお勧めします。
@@ -40,7 +40,7 @@ npm install formous@v0.1.0-beta.6
 ### CDNを使用する場合
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/formous@latest/dist/formous.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/ousllc/formous@latest/dist/formous.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     Formous({
@@ -422,6 +422,43 @@ Formous({
   behavior?: 'auto' | 'smooth';  // スクロールの動作
 }
 ```
+
+## バリデーション機能
+
+### エラーメッセージの表示ルール
+
+エラーメッセージは以下の優先順位で表示されます：
+
+1. `data-error-fixed`属性がある場合
+   - HTML内のメッセージを固定表示
+   - メッセージが空の場合は空のまま表示
+2. オプションで設定されたメッセージ
+3. HTML内にテキストが存在する場合
+4. デフォルトのバリデーションメッセージ
+
+### エラー要素の指定方法
+
+1. 特定のバリデーションタイプに対応するエラー
+   ```html
+   <div data-validation="error" data-validation-type="required">必須項目です</div>
+   <div data-validation="error" data-validation-type="minLength">2文字以上で入力してください</div>
+   ```
+
+2. 単一のエラー要素（最初のエラーを表示）
+   ```html
+   <div data-validation="error">必須項目です</div>
+   ```
+
+### 表示制御
+
+- `data-validation-type`指定時：対応するエラーの有無で表示/非表示
+- type指定なし：いずれかのエラーがある場合に表示
+- すべてのエラーが解消された場合：非表示
+
+```html
+<form id="myForm" novalidate>
+
+
 
 ## ライセンス
 

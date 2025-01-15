@@ -14,11 +14,7 @@ export default defineConfig({
       formats: ['es', 'cjs', 'umd']
     },
     rollupOptions: {
-      external: ['lit'],
       output: {
-        globals: {
-          lit: 'Lit'
-        },
         exports: 'named'
       }
     }

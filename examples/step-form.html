@@ -35,15 +35,15 @@
         <div>
           <label for="firstName">First Name:</label>
           <input type="text" id="firstName" name="firstName" minlength="2" maxlength="30" required />
-          <div data-validation="error" data-validation-type="required">必須項目です</div>
-          <div data-validation="error" data-validation-type="minlength">2文字以上で入力してください</div>
+          <div data-validation="error" data-error-fixed>必須</div>
         </div>
 
         <!-- Last Name -->
         <div>
           <label for="lastName">Last Name:</label>
           <input type="text" id="lastName" name="lastName" minlength="2" maxlength="30" required />
-          <div data-validation="error" data-validation-type="required">必須項目です</div>
+          <div data-validation="error" data-validation-type="required">Last Nameは必須です</div>
+          <div data-validation="error" data-validation-type="minLength">2文字以上で入力してください</div>
         </div>
 
         <!-- Email -->
@@ -206,7 +206,7 @@
           delimiter: '/'
         },
         validationMessages: {
-          required: '必須項目です',
+          required: '必須項目です！',
           email: 'メールアドレスの形式が正しくありません',
           minLength: (field) => `${field.getAttribute('minlength')}文字以上で入力してください`,
           maxLength: (field) => `${field.getAttribute('maxlength')}文字以下で入力してください`

@@ -134,14 +134,41 @@ function getErrorMessage(type: string, field: HTMLInputElement, errorsByType: { 
 
 // エラー要素の更新を行うヘルパー関数
 function updateErrorElements(elements: NodeListOf<Element>, errorsByType: { [key: string]: string }, field: HTMLInputElement, options?: FormousOptions) {
+    const singleErrorMode = elements.length === 1;
+    const hasErrors = Object.keys(errorsByType).length > 0;
+
     elements.forEach(errorElement => {
         const targetType = errorElement.getAttribute('data-validation-type');
-        if (targetType && Object.keys(errorsByType).length > 0) {
+        const element = errorElement as HTMLElement;
+        const hasInnerText = element.innerHTML.trim();
+        const isFixed = element.hasAttribute('data-error-fixed');
+
+        if (targetType) {
             const message = getErrorMessage(targetType, field, errorsByType, options);
-            if (!errorElement.hasAttribute('data-error-fixed')) {
-                (errorElement as HTMLElement).innerHTML = message;
+            if (isFixed) {
+                element.style.display = errorsByType[targetType] ? 'block' : 'none';
+                return;
             }
-            (errorElement as HTMLElement).style.display = errorsByType[targetType] ? 'block' : 'none';
+
+            const optionMessage = options?.validationMessages?.[targetType];
+            if (optionMessage) {
+                element.innerHTML = message;
+            } else if (hasInnerText) {
+            } else {
+                element.innerHTML = message;
+            }
+            element.style.display = errorsByType[targetType] ? 'block' : 'none';
+        } else if (singleErrorMode) {
+            const firstErrorType = Object.keys(errorsByType)[0];
+            const message = getErrorMessage(firstErrorType, field, errorsByType, options);
+            if (!isFixed) {
+                const optionMessage = options?.validationMessages?.[firstErrorType];
+                if (optionMessage || !hasInnerText) {
+                    element.innerHTML = message;
+                }
+            }
+            // すべてのバリデーションエラーがなくなれば非表示
+            element.style.display = hasErrors ? 'block' : 'none';
         }
     });
 }
