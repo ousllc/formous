@@ -6,15 +6,20 @@ import { validateField, validateForm, addCustomValidationRules, smoothScroll } f
 import { initializeStepForm } from './step';
 import { FormousOptions } from './types';
 
-// Webflowとの統合のためのグローバル変数初期化
-(window as any).Webflow = (window as any).Webflow || [];
+// グローバル型定義の拡張
+declare global {
+  interface Window {
+    Formous: typeof FormousInit;
+    Webflow: any[];
+  }
+}
 
 /**
  * Formousのメイン初期化関数
  * @param options - フォームの設定オプション
  * @returns フォーム操作用のメソッドを含むオブジェクト
  */
-export function Formous(options: FormousOptions) {
+const FormousInit = (options: FormousOptions) => {
   // Webflow統合モードの場合
   if (options.enableWebflow) {
     (window as any).Webflow.push(() => {
@@ -109,5 +114,11 @@ function initializeFormous(options: FormousOptions) {
   };
 }
 
-// グローバルスコープへの登録（必要に応じて使用可能）
-(window as any).Formous = Formous;
+// ファクトリー関数をデフォルトエクスポート
+export default FormousInit;
+export { FormousInit as Formous };  // 名前付きエクスポートとしても提供
+
+// ブラウザ環境での使用のために、windowオブジェクトに追加
+if (typeof window !== 'undefined') {
+  window.Formous = FormousInit;
+}

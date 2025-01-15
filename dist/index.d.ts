@@ -1,10 +1,16 @@
 import { FormousOptions } from './types';
+declare global {
+    interface Window {
+        Formous: typeof FormousInit;
+        Webflow: any[];
+    }
+}
 /**
  * Formousのメイン初期化関数
  * @param options - フォームの設定オプション
  * @returns フォーム操作用のメソッドを含むオブジェクト
  */
-export declare function Formous(options: FormousOptions): {
+declare const FormousInit: (options: FormousOptions) => {
     showStep: (index: number) => void;
     handleNext: () => void;
     handlePrevious: () => void;
@@ -14,3 +20,5 @@ export declare function Formous(options: FormousOptions): {
     validateForm: () => boolean;
     validateField: (field: HTMLInputElement) => boolean;
 } | undefined;
+export default FormousInit;
+export { FormousInit as Formous };
