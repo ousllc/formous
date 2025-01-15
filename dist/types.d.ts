@@ -45,10 +45,8 @@ export interface FormousOptions {
         duration?: string;
     };
     stepOptions?: {
-        stepSelector?: string;
         progressFillSelector?: string;
         indicatorSelector?: string;
         progressSelector?: string;
-        activeClass?: string;
     };
 }

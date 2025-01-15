@@ -4,36 +4,16 @@ import { FormousOptions } from './types';
 // ステップフォームを初期化する関数
 export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage: boolean = false, options?: FormousOptions) {
     const {
-        stepSelector = '.step',
         progressFillSelector = '#progress-fill',
         indicatorSelector = '.step-indicator',
-        progressSelector = '#step-progress',
-        activeClass = 'active'
+        progressSelector = '#step-progress'
     } = options?.stepOptions || {};
 
-    let steps = Array.from(form.querySelectorAll(stepSelector));
+    let steps = Array.from(form.querySelectorAll('.step'));
     const progressBarFill = form.querySelector(progressFillSelector) as HTMLElement;
     const stepIndicators = form.querySelectorAll(indicatorSelector);
     const stepProgress = form.querySelector(progressSelector) as HTMLElement;
     let currentStepIndex = 0;
-
-    if (enableConfirmationPage) {
-        let confirmationStep = form.querySelector('.step[data-confirmation="true"]') as HTMLElement | null;
-
-        if (!confirmationStep) {
-            confirmationStep = document.createElement('div');
-            confirmationStep.classList.add('step');
-            confirmationStep.setAttribute('data-confirmation', 'true');
-            confirmationStep.innerHTML = `
-              <h3>Confirmation</h3>
-              <div id="confirmation-content"></div>
-              <button type="button" data-action="previous">Back</button>
-              <button type="submit">Submit</button>
-            `;
-            form.appendChild(confirmationStep);
-        }
-        steps = Array.from(form.querySelectorAll(stepSelector));
-    }
 
     const updateConfirmationPage = (options: FormousOptions) => {
         const confirmationStep = form.querySelector('.step[data-confirmation="true"]') as HTMLElement | null;
@@ -101,9 +81,19 @@ export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage
     };
 
     const showStep = (index: number) => {
-        steps.forEach((step, i) => step.classList.toggle(activeClass, i === index));
+        steps.forEach((step, i) => step.classList.toggle('active', i === index));
         currentStepIndex = index;
         updateProgressBar();
+
+        const currentStepElement = form.querySelector('[data-step-current]');
+        const totalStepsElement = form.querySelector('[data-step-total]');
+
+        if (currentStepElement) {
+            currentStepElement.textContent = String(currentStepIndex + 1);
+        }
+        if (totalStepsElement) {
+            totalStepsElement.textContent = String(steps.length);
+        }
 
         const currentStep = steps[currentStepIndex];
         const nextButton = currentStep.querySelector('[data-action="next"]') as HTMLButtonElement | null;
@@ -159,7 +149,7 @@ export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage
 
     form.addEventListener('click', (event) => {
         const target = event.target as HTMLElement;
-        if (target.tagName === 'BUTTON') {
+        if (target.hasAttribute('data-action')) {
             const action = target.getAttribute('data-action');
             if (action === 'next' || action === 'confirm') handleNext();
             else if (action === 'previous') handlePrevious();
@@ -172,21 +162,6 @@ export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage
 
     stepIndicators.forEach((indicator, index) => {
         indicator.addEventListener('click', () => handleIndicatorClick(index));
-    });
-
-    // 次へ・前へボタンのイベントリスナー設定
-    form.querySelectorAll('[data-action="next"]').forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault();  // デフォルトの挙動を防ぐ
-            handleNext();
-        });
-    });
-    
-    form.querySelectorAll('[data-action="previous"]').forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault();  // デフォルトの挙動を防ぐ
-            handlePrevious();
-        });
     });
 
     return {
