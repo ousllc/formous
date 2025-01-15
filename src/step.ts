@@ -85,16 +85,6 @@ export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage
         currentStepIndex = index;
         updateProgressBar();
 
-        const currentStepElement = form.querySelector('[data-step-current]');
-        const totalStepsElement = form.querySelector('[data-step-total]');
-
-        if (currentStepElement) {
-            currentStepElement.textContent = String(currentStepIndex + 1);
-        }
-        if (totalStepsElement) {
-            totalStepsElement.textContent = String(steps.length);
-        }
-
         const currentStep = steps[currentStepIndex];
         const nextButton = currentStep.querySelector('[data-action="next"]') as HTMLButtonElement | null;
         const confirmButton = currentStep.querySelector('[data-action="confirm"]') as HTMLButtonElement | null;

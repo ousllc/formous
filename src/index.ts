@@ -107,10 +107,8 @@ function initializeFormous(options: FormousOptions) {
     }
   });
 
-  // 確認ページ機能が有効な場合はステップフォームを初期化
-  if (options.enableConfirmationPage) {
-    return initializeStepForm(form, true, options);
-  }
+  // ステップフォームを常に初期化
+  return initializeStepForm(form, options.enableConfirmationPage || false, options);
 
   // フォーム操作用のメソッドを返却
   return {

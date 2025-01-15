@@ -147,22 +147,22 @@ const T = {
   },
   password: {
     validate: (e, t, r) => {
-      var g;
-      const a = ((g = r == null ? void 0 : r.validationPatterns) == null ? void 0 : g.password) || {}, n = a.minLength ?? 8, i = a.maxLength ?? 100, s = a.requireUppercase ?? !0, d = a.requireNumber ?? !0, l = a.requireSymbol ?? !0;
+      var f;
+      const a = ((f = r == null ? void 0 : r.validationPatterns) == null ? void 0 : f.password) || {}, n = a.minLength ?? 8, i = a.maxLength ?? 100, s = a.requireUppercase ?? !0, d = a.requireNumber ?? !0, l = a.requireSymbol ?? !0;
       return !(e.length < n || e.length > i || s && !/[A-Z]/.test(e) || d && !/\d/.test(e) || l && !/[!@#$%^&*]/.test(e));
     },
     message: (e, t) => {
-      var g;
-      const r = ((g = t == null ? void 0 : t.validationPatterns) == null ? void 0 : g.password) || {}, a = r.minLength ?? 8, n = r.maxLength ?? 100, i = r.requireUppercase ?? !0, s = r.requireNumber ?? !0, d = r.requireSymbol ?? !0, l = [];
+      var f;
+      const r = ((f = t == null ? void 0 : t.validationPatterns) == null ? void 0 : f.password) || {}, a = r.minLength ?? 8, n = r.maxLength ?? 100, i = r.requireUppercase ?? !0, s = r.requireNumber ?? !0, d = r.requireSymbol ?? !0, l = [];
       return l.push(`at least ${a} characters${n !== 100 ? `, maximum ${n} characters` : ""}`), i && l.push("uppercase letter"), s && l.push("number"), d && l.push("special character (!@#$%^&*)"), `Password must contain ${l.join(", ")}`;
     }
   }
-}, P = { ...T };
+}, S = { ...T };
 function H(e) {
-  Object.assign(P, e);
+  Object.assign(S, e);
 }
-function S(e, t, r = !1) {
-  var o, p;
+function E(e, t, r = !1) {
+  var u, y;
   const a = e.closest("fieldset[data-validation]");
   let n = !0, i = {};
   const s = [
@@ -173,39 +173,39 @@ function S(e, t, r = !1) {
     { attr: "maxlength", type: "maxLength" }
   ];
   if (e.type === "email") {
-    const c = P.email;
-    c && !c.validate(e.value, e) && (i.email = c.message(e), n = !1);
+    const o = S.email;
+    o && !o.validate(e.value, e) && (i.email = o.message(e), n = !1);
   }
-  s.forEach((c) => {
-    var u;
-    if (e.hasAttribute(c.attr)) {
-      const m = P[c.type];
+  s.forEach((o) => {
+    var c;
+    if (e.hasAttribute(o.attr)) {
+      const m = S[o.type];
       if (m && !m.validate(e.value, e)) {
-        const x = (u = t == null ? void 0 : t.validationMessages) == null ? void 0 : u[c.type], A = typeof m.message == "function" ? m.message(e) : m.message;
-        i[c.type] = x || A, n = !1;
+        const p = (c = t == null ? void 0 : t.validationMessages) == null ? void 0 : c[o.type], q = typeof m.message == "function" ? m.message(e) : m.message;
+        i[o.type] = p || q, n = !1;
       }
     }
-  }), (a ? ((o = a.getAttribute("data-validation")) == null ? void 0 : o.split(" ")) || [] : ((p = e.getAttribute("data-validation")) == null ? void 0 : p.split(" ")) || []).forEach((c) => {
-    const u = P[c];
-    u && (u.validate(e.value, e, t) || (i[c] = u.message(e, t), n = !1));
+  }), (a ? ((u = a.getAttribute("data-validation")) == null ? void 0 : u.split(" ")) || [] : ((y = e.getAttribute("data-validation")) == null ? void 0 : y.split(" ")) || []).forEach((o) => {
+    const c = S[o];
+    c && (c.validate(e.value, e, t) || (i[o] = c.message(e, t), n = !1));
   });
   const l = a || e.closest("div");
   if (l) {
-    const c = l.querySelectorAll('[data-validation="error"]');
-    F(c, i, e, t);
+    const o = l.querySelectorAll('[data-validation="error"]');
+    V(o, i, e, t);
   }
-  const g = e.getAttribute("name");
-  if (g) {
-    const c = document.querySelectorAll(`[data-validation="error"][data-validation-for="${g}"]`), u = document.querySelector("[data-validation-error-global]");
-    (r || u != null && u.classList.contains("active")) && F(c, i, e, t);
-    const m = Array.from(c).some(
-      (x) => x.style.display === "block"
+  const f = e.getAttribute("name");
+  if (f) {
+    const o = document.querySelectorAll(`[data-validation="error"][data-validation-for="${f}"]`), c = document.querySelector("[data-validation-error-global]");
+    (r || c != null && c.classList.contains("active")) && V(o, i, e, t);
+    const m = Array.from(o).some(
+      (p) => p.style.display === "block"
     );
-    u == null || u.classList.toggle("active", m);
+    c == null || c.classList.toggle("active", m);
   }
   return n;
 }
-function V(e, t, r, a) {
+function k(e, t, r, a) {
   var s, d, l;
   if (console.log("Debug getErrorMessage:", {
     type: e,
@@ -222,32 +222,32 @@ function V(e, t, r, a) {
   const i = (l = a == null ? void 0 : a.validationMessages) == null ? void 0 : l[e];
   if (i) {
     if (console.log("Using option message:", i), typeof i == "function") {
-      const g = i(t);
-      return console.log("Function message result:", g), g;
+      const f = i(t);
+      return console.log("Function message result:", f), f;
     }
     return i;
   }
   return console.log("Using default message:", r[e]), r[e];
 }
-function F(e, t, r, a) {
+function V(e, t, r, a) {
   const n = e.length === 1, i = Object.keys(t).length > 0;
   e.forEach((s) => {
-    var p, c;
-    const d = s.getAttribute("data-validation-type"), l = s, g = l.innerHTML.trim(), o = l.hasAttribute("data-error-fixed");
+    var y, o;
+    const d = s.getAttribute("data-validation-type"), l = s, f = l.innerHTML.trim(), u = l.hasAttribute("data-error-fixed");
     if (d) {
-      const u = V(d, r, t, a);
-      if (o) {
+      const c = k(d, r, t, a);
+      if (u) {
         l.style.display = t[d] ? "block" : "none";
         return;
       }
-      ((p = a == null ? void 0 : a.validationMessages) == null ? void 0 : p[d]) ? l.innerHTML = u : g || (l.innerHTML = u), l.style.display = t[d] ? "block" : "none";
+      ((y = a == null ? void 0 : a.validationMessages) == null ? void 0 : y[d]) ? l.innerHTML = c : f || (l.innerHTML = c), l.style.display = t[d] ? "block" : "none";
     } else if (n) {
-      const u = Object.keys(t)[0], m = V(u, r, t, a);
-      o || ((c = a == null ? void 0 : a.validationMessages) != null && c[u] || !g) && (l.innerHTML = m), l.style.display = i ? "block" : "none";
+      const c = Object.keys(t)[0], m = k(c, r, t, a);
+      u || ((o = a == null ? void 0 : a.validationMessages) != null && o[c] || !f) && (l.innerHTML = m), l.style.display = i ? "block" : "none";
     }
   });
 }
-function k(e, t = {}) {
+function L(e, t = {}) {
   const {
     offset: r = 50,
     behavior: a = "smooth",
@@ -264,13 +264,13 @@ function k(e, t = {}) {
     }, 2e3);
   }, parseFloat(n) * 1e3);
 }
-function M(e, t) {
+function N(e, t) {
   const r = e.querySelectorAll("input, textarea, select");
   let a = !0, n = null;
   return r.forEach((i) => {
-    S(i, t, !0) || (a = !1, n || (n = i));
+    E(i, t, !0) || (a = !1, n || (n = i));
   }), !a && n && setTimeout(() => {
-    n && k(n, t.scrollOptions);
+    n && L(n, t.scrollOptions);
   }, 0), a;
 }
 function U(e, t = !1, r) {
@@ -280,81 +280,79 @@ function U(e, t = !1, r) {
     progressSelector: i = "#step-progress"
   } = (r == null ? void 0 : r.stepOptions) || {};
   let s = Array.from(e.querySelectorAll(".step"));
-  const d = e.querySelector(a), l = e.querySelectorAll(n), g = e.querySelector(i);
-  let o = 0;
-  const p = (v) => {
-    const f = e.querySelector('.step[data-confirmation="true"]');
-    if (!f) return;
-    f.querySelectorAll("[data-confirm]").forEach((b) => {
-      var E, w;
-      const y = b.getAttribute("data-confirm");
-      if (!y) return;
-      if ((E = e.querySelector(`fieldset input[name="${y}"]`)) == null ? void 0 : E.closest("fieldset")) {
-        const L = e.querySelectorAll(`input[name="${y}"]:checked`), R = Array.from(L).map((O) => {
-          const $ = O.nextElementSibling;
-          return ($ == null ? void 0 : $.textContent) || "";
-        }).filter(Boolean), C = ((w = v.confirmationOptions) == null ? void 0 : w.delimiter) || ",";
-        b.textContent = R.join(C);
+  const d = e.querySelector(a), l = e.querySelectorAll(n), f = e.querySelector(i);
+  let u = 0;
+  const y = (v) => {
+    const h = e.querySelector('.step[data-confirmation="true"]');
+    if (!h) return;
+    h.querySelectorAll("[data-confirm]").forEach((b) => {
+      var $, M;
+      const x = b.getAttribute("data-confirm");
+      if (!x) return;
+      if (($ = e.querySelector(`fieldset input[name="${x}"]`)) == null ? void 0 : $.closest("fieldset")) {
+        const A = e.querySelectorAll(`input[name="${x}"]:checked`), R = Array.from(A).map((C) => {
+          const w = C.nextElementSibling;
+          return (w == null ? void 0 : w.textContent) || "";
+        }).filter(Boolean), O = ((M = v.confirmationOptions) == null ? void 0 : M.delimiter) || ",";
+        b.textContent = R.join(O);
       } else {
-        const L = e.querySelector(`[name="${y}"]`);
-        L ? b.textContent = L.value || "未入力" : b.textContent = "未入力";
+        const A = e.querySelector(`[name="${x}"]`);
+        A ? b.textContent = A.value || "未入力" : b.textContent = "未入力";
       }
     });
+  }, o = () => {
+    const v = (u + 1) / s.length * 100;
+    d && (d.style.width = `${v}%`), l.forEach((h, g) => {
+      h.classList.toggle("active", g <= u);
+    }), f && (f.textContent = `Step ${u + 1}/${s.length}`);
   }, c = () => {
-    const v = (o + 1) / s.length * 100;
-    d && (d.style.width = `${v}%`), l.forEach((f, h) => {
-      f.classList.toggle("active", h <= o);
-    }), g && (g.textContent = `Step ${o + 1}/${s.length}`);
-  }, u = () => {
-    const f = s[o].querySelectorAll(
+    const h = s[u].querySelectorAll(
       'input, textarea, select, [contenteditable="true"], button[role="combobox"], div[role="listbox"], div[role="slider"], div[role="spinbutton"]'
     );
-    let h = !0;
-    return f.forEach((b) => {
-      S(b, r) || (h = !1);
-    }), h;
+    let g = !0;
+    return h.forEach((b) => {
+      E(b, r) || (g = !1);
+    }), g;
   }, m = (v) => {
-    s.forEach((E, w) => E.classList.toggle("active", w === v)), o = v, c();
-    const f = e.querySelector("[data-step-current]"), h = e.querySelector("[data-step-total]");
-    f && (f.textContent = String(o + 1)), h && (h.textContent = String(s.length));
-    const b = s[o], y = b.querySelector('[data-action="next"]'), q = b.querySelector('[data-action="confirm"]');
-    t && o === s.length - 2 ? (y && (y.style.display = "none"), q && (q.style.display = "inline-block")) : (y && (y.style.display = "inline-block"), q && (q.style.display = "none")), t && o === s.length - 1 && p(r || {
+    s.forEach((x, P) => x.classList.toggle("active", P === v)), u = v, o();
+    const h = s[u], g = h.querySelector('[data-action="next"]'), b = h.querySelector('[data-action="confirm"]');
+    t && u === s.length - 2 ? (g && (g.style.display = "none"), b && (b.style.display = "inline-block")) : (g && (g.style.display = "inline-block"), b && (b.style.display = "none")), t && u === s.length - 1 && y(r || {
       formSelector: "#step-form",
       confirmationOptions: {
         delimiter: "、"
       }
     });
-  }, x = () => {
-    if (!u()) {
-      const h = s[o].querySelector("input:invalid, textarea:invalid, select:invalid");
-      h && k(h, r == null ? void 0 : r.scrollOptions);
+  }, p = () => {
+    if (!c()) {
+      const g = s[u].querySelector("input:invalid, textarea:invalid, select:invalid");
+      g && L(g, r == null ? void 0 : r.scrollOptions);
       return;
     }
-    o < s.length - 1 && m(o + 1);
-  }, A = () => {
-    o > 0 && m(o - 1);
+    u < s.length - 1 && m(u + 1);
+  }, q = () => {
+    u > 0 && m(u - 1);
   }, I = (v) => {
-    v > o && !u() || m(v);
+    v > u && !c() || m(v);
   };
-  return m(o), e.addEventListener("click", (v) => {
-    const f = v.target;
-    if (f.hasAttribute("data-action")) {
-      const h = f.getAttribute("data-action");
-      if (h === "next" || h === "confirm") x();
-      else if (h === "previous") A();
-      else if (h === "edit") {
-        const b = parseInt(f.getAttribute("data-target-step") || "1") - 1;
+  return m(u), e.addEventListener("click", (v) => {
+    const h = v.target;
+    if (h.hasAttribute("data-action")) {
+      const g = h.getAttribute("data-action");
+      if (g === "next" || g === "confirm") p();
+      else if (g === "previous") q();
+      else if (g === "edit") {
+        const b = parseInt(h.getAttribute("data-target-step") || "1") - 1;
         m(b);
       }
     }
-  }), l.forEach((v, f) => {
-    v.addEventListener("click", () => I(f));
+  }), l.forEach((v, h) => {
+    v.addEventListener("click", () => I(h));
   }), {
     showStep: m,
-    handleNext: x,
-    handlePrevious: A,
-    updateProgressBar: c,
-    updateConfirmationPage: p
+    handleNext: p,
+    handlePrevious: q,
+    updateProgressBar: o,
+    updateConfirmationPage: y
   };
 }
 const j = {
@@ -367,33 +365,33 @@ typeof window < "u" && (window.Webflow = window.Webflow || []);
 const W = (e) => {
   if (e.enableWebflow) {
     window.Webflow.push(() => {
-      N(e);
+      F(e);
     });
     return;
   }
-  return N(e);
+  return F(e);
 };
-function N(e) {
+function F(e) {
   const t = document.querySelector(e.formSelector);
   if (!t) {
     console.error("Form not found");
     return;
   }
   return e.customRules && H(e.customRules), t.querySelectorAll("input, textarea, select").forEach((a) => {
-    a.addEventListener("input", () => S(a, e, !1)), a.addEventListener("blur", () => S(a, e, !1));
+    a.addEventListener("input", () => E(a, e, !1)), a.addEventListener("blur", () => E(a, e, !1));
   }), e.enableWebflow && (t.setAttribute("novalidate", "true"), t.querySelectorAll('[data-validation="error"]').forEach((a) => {
     a.style.display = "none";
   })), t.addEventListener("submit", async (a) => {
     if (e.enableWebflow) {
-      if (!M(t, e)) {
+      if (!N(t, e)) {
         a.preventDefault(), a.stopPropagation();
         return;
       }
       return;
     }
-    if (a.preventDefault(), !M(t, e)) {
+    if (a.preventDefault(), !N(t, e)) {
       const s = t.querySelector("input:invalid, textarea:invalid, select:invalid");
-      s && k(s, e.scrollOptions);
+      s && L(s, e.scrollOptions);
       return;
     }
     const i = new FormData(t);
@@ -402,10 +400,7 @@ function N(e) {
     } catch (s) {
       console.error("Error:", s);
     }
-  }), e.enableConfirmationPage ? U(t, !0, e) : {
-    validateForm: () => M(t, e),
-    validateField: (a) => S(a, e)
-  };
+  }), U(t, e.enableConfirmationPage || !1, e);
 }
 typeof window < "u" && (window.Formous = W);
 export {
