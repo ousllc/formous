@@ -1,9 +1,9 @@
 export type ValidationRule = {
-    validate: (value: string, field: HTMLInputElement) => boolean;
-    message: (field: HTMLInputElement) => string;
+    validate: (value: string, field: HTMLInputElement, options?: FormousOptions) => boolean;
+    message: (field: HTMLInputElement, options?: FormousOptions) => string;
 };
 
-export type FormousOptions = {
+export interface FormousOptions {
     formSelector: string;
     
     enableWebflow?: boolean;
@@ -24,7 +24,19 @@ export type FormousOptions = {
         maxlength?: string | ((field: HTMLInputElement) => string);
         min?: string | ((field: HTMLInputElement) => string);
         max?: string | ((field: HTMLInputElement) => string);
+        password?: string | ((field: HTMLInputElement, options?: FormousOptions) => string);
         [key: string]: string | ((field: HTMLInputElement) => string) | undefined;
+    };
+    
+    validationPatterns?: {
+        password?: {
+            minLength?: number;
+            maxLength?: number;
+            requireUppercase?: boolean;
+            requireNumber?: boolean;
+            requireSymbol?: boolean;
+        };
+        [key: string]: any;
     };
     
     customRules?: {
@@ -47,4 +59,4 @@ export type FormousOptions = {
         progressSelector?: string;
         activeClass?: string;
     };
-}; 
+}

@@ -57,9 +57,9 @@ export function validateField(field: HTMLInputElement, options?: FormousOptions,
     validationTypes.forEach(type => {
         const rule = ValidationRules[type];
         if (rule) {
-            const result = rule.validate(field.value, field);
+            const result = rule.validate(field.value, field, options);
             if (!result) {
-                errorsByType[type] = rule.message(field);
+                errorsByType[type] = rule.message(field, options);
                 isValid = false;
             }
         }

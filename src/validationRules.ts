@@ -1,7 +1,9 @@
+import { FormousOptions } from './types';
+
 // バリデーションルールの型定義
 export type ValidationRule = {
-    validate: (value: string, field: HTMLInputElement) => boolean; // 検証関数
-    message: (field: HTMLInputElement) => string; // エラーメッセージ生成関数
+    validate: (value: string, field: HTMLInputElement, options?: FormousOptions) => boolean;
+    message: (field: HTMLInputElement, options?: FormousOptions) => string;
 };
 
 // デフォルトのバリデーションルールセット
@@ -176,8 +178,6 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
             return `Please select between ${min} and ${max} options.`;
         },
     },
-
-
     'confirm-email': {
         // メールアドレスが一致するか確認
         validate: (value, field) => {
@@ -186,5 +186,38 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
             return value === emailInput.value;
         },
         message: () => 'Email addresses do not match.',
+    },
+    'password': {
+        validate: (value: string, _: HTMLInputElement, options?: FormousOptions) => {
+            const config = options?.validationPatterns?.password || {};
+            const minLength = config.minLength ?? 8;
+            const maxLength = config.maxLength ?? 100;
+            const requireUppercase = config.requireUppercase ?? true;
+            const requireNumber = config.requireNumber ?? true;
+            const requireSymbol = config.requireSymbol ?? true;
+            
+            if (value.length < minLength || value.length > maxLength) return false;
+            if (requireUppercase && !/[A-Z]/.test(value)) return false;
+            if (requireNumber && !/\d/.test(value)) return false;
+            if (requireSymbol && !/[!@#$%^&*]/.test(value)) return false;
+            
+            return true;
+        },
+        message: (_: HTMLInputElement, options?: FormousOptions) => {
+            const config = options?.validationPatterns?.password || {};
+            const minLength = config.minLength ?? 8;
+            const maxLength = config.maxLength ?? 100;
+            const requireUppercase = config.requireUppercase ?? true;
+            const requireNumber = config.requireNumber ?? true;
+            const requireSymbol = config.requireSymbol ?? true;
+            
+            const requirements = [];
+            requirements.push(`at least ${minLength} characters${maxLength !== 100 ? `, maximum ${maxLength} characters` : ''}`);
+            if (requireUppercase) requirements.push('uppercase letter');
+            if (requireNumber) requirements.push('number');
+            if (requireSymbol) requirements.push('special character (!@#$%^&*)');
+    
+            return `Password must contain ${requirements.join(', ')}`;
+        }
     },
 };

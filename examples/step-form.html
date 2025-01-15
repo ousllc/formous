@@ -65,7 +65,7 @@
         <div>
           <label for="password">Password:</label>
           <input type="password" id="password" name="password" data-validation="password" required />
-          <div data-validation="error" data-validation-type="password">8文字以上で、英字と数字を含める必要があります</div>
+          <div data-validation="error" data-validation-type="password"></div>
         </div>
 
         <button type="button" data-action="next">Next</button>
@@ -209,13 +209,19 @@
           required: '必須項目です！',
           email: 'メールアドレスの形式が正しくありません',
           minLength: (field) => `${field.getAttribute('minlength')}文字以上で入力してください`,
-          maxLength: (field) => `${field.getAttribute('maxlength')}文字以下で入力してください`
+          maxLength: (field) => `${field.getAttribute('maxlength')}文字以下で入力してください`,
+          password: '8文字以上で、大文字・小文字・数字・記号(!@#$%^&*)をそれぞれ1文字以上含める必要があります'
+        },
+        validationPatterns: {
+          password: {
+              minLength: 5,
+              maxLength: 20,
+              requireUppercase: true,
+              requireNumber: true,
+              requireSymbol: false
+          }
         },
         customRules: {
-          password: {
-            validate: (value) => /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(value),
-            message: () => 'パスワードは8文字以上で、英字と数字を含める必要があります'
-          },
           postalCode: {
             validate: (value) => /^\d{3}-?\d{4}$/.test(value),
             message: () => '正しい郵便番号の形式で入力してください'

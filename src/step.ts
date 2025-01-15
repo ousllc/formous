@@ -174,6 +174,21 @@ export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage
         indicator.addEventListener('click', () => handleIndicatorClick(index));
     });
 
+    // 次へ・前へボタンのイベントリスナー設定
+    form.querySelectorAll('[data-action="next"]').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();  // デフォルトの挙動を防ぐ
+            handleNext();
+        });
+    });
+    
+    form.querySelectorAll('[data-action="previous"]').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();  // デフォルトの挙動を防ぐ
+            handlePrevious();
+        });
+    });
+
     return {
         showStep,
         handleNext,
