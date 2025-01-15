@@ -12,23 +12,51 @@ Formousは、フォームの実装を簡単にするTypeScriptライブラリで
 - 🔄 確認ページ機能とプログレスバー
 - 🌐 Webflow統合オプション
 
-## クイックスタート
+## インストール
 
-### CDNでの利用
+### CDNを使用する場合
 
 ```html
-<!-- headタグ内に追加 -->
 <script src="https://cdn.jsdelivr.net/npm/formous@latest/dist/formous.min.js"></script>
 ```
 
-または
+### npmを使用する場合
+
+```bash
+npm install formous
+```
+
+## 基本的な使い方
+
+### CDNを使用する場合
 
 ```html
-<!-- モジュールとして利用 -->
-<script type="module">
-  import { Formous } from 'https://cdn.jsdelivr.net/npm/formous@latest/dist/formous.esm.js';
-  // Formousの初期化
+<script src="https://cdn.jsdelivr.net/npm/formous@latest/dist/formous.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Formous({
+      formSelector: '#my-form',
+      validationMessages: {
+        required: '必須項目です',
+        email: 'メールアドレスの形式が正しくありません'
+      }
+    });
+  });
 </script>
+```
+
+### モジュールとして使用する場合
+
+```javascript
+import { Formous } from 'formous';
+
+Formous({
+  formSelector: '#my-form',
+  validationMessages: {
+    required: '必須項目です',
+    email: 'メールアドレスの形式が正しくありません'
+  }
+});
 ```
 
 ### 開発者向けインストール

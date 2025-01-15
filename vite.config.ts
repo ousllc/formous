@@ -10,7 +10,7 @@ export default defineConfig({
     lib: {
       entry: 'src/index.ts',
       name: 'Formous',
-      fileName: 'index',
+      fileName: (format) => format === 'umd' ? 'formous.min.js' : `formous.${format}.js`,
       formats: ['es', 'cjs', 'umd']
     },
     rollupOptions: {

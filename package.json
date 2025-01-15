@@ -19,16 +19,16 @@
     "typescript": "~5.6.2",
     "vite": "^6.0.5"
   },
-  "main": "./dist/index.cjs.js",
-  "module": "./dist/index.es.js",
-  "browser": "./dist/index.umd.js",
+  "main": "./dist/formous.cjs.js",
+  "module": "./dist/formous.esm.js",
+  "browser": "./dist/formous.min.js",
   "types": "./dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "require": "./dist/index.cjs.js",
-      "import": "./dist/index.es.js",
-      "default": "./dist/index.umd.js"
+      "require": "./dist/formous.cjs.js",
+      "import": "./dist/formous.esm.js",
+      "default": "./dist/formous.min.js"
     }
   }
 }
