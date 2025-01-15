@@ -19,8 +19,7 @@ export default defineConfig({
         globals: {
           lit: 'Lit'
         },
-        inlineDynamicImports: false,
-        format: 'iife'
+        exports: 'named'
       }
     }
   }

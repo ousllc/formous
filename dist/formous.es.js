@@ -161,32 +161,32 @@ function x(e, t, r = !1) {
     { attr: "maxlength", type: "maxLength" }
   ];
   if (e.type === "email") {
-    const u = S.email;
-    u && !u.validate(e.value, e) && (s.email = u.message(e), n = !1);
+    const c = S.email;
+    c && !c.validate(e.value, e) && (s.email = c.message(e), n = !1);
   }
-  l.forEach((u) => {
+  l.forEach((c) => {
     var m;
-    if (e.hasAttribute(u.attr)) {
-      const g = S[u.type];
+    if (e.hasAttribute(c.attr)) {
+      const g = S[c.type];
       if (g && !g.validate(e.value, e)) {
-        const i = (m = t == null ? void 0 : t.validationMessages) == null ? void 0 : m[u.type], c = typeof g.message == "function" ? g.message(e) : g.message;
-        s[u.type] = i || c, n = !1;
+        const i = (m = t == null ? void 0 : t.validationMessages) == null ? void 0 : m[c.type], u = typeof g.message == "function" ? g.message(e) : g.message;
+        s[c.type] = i || u, n = !1;
       }
     }
-  }), (a ? ((y = a.getAttribute("data-validation")) == null ? void 0 : y.split(" ")) || [] : ((v = e.getAttribute("data-validation")) == null ? void 0 : v.split(" ")) || []).forEach((u) => {
-    const m = S[u];
-    m && (m.validate(e.value, e) || (s[u] = m.message(e), n = !1));
+  }), (a ? ((y = a.getAttribute("data-validation")) == null ? void 0 : y.split(" ")) || [] : ((v = e.getAttribute("data-validation")) == null ? void 0 : v.split(" ")) || []).forEach((c) => {
+    const m = S[c];
+    m && (m.validate(e.value, e) || (s[c] = m.message(e), n = !1));
   });
   const h = a || e.closest("div");
   if (h) {
-    const u = h.querySelectorAll('[data-validation="error"]');
-    k(u, s, e, t);
+    const c = h.querySelectorAll('[data-validation="error"]');
+    k(c, s, e, t);
   }
   const b = e.getAttribute("name");
   if (b) {
-    const u = document.querySelectorAll(`[data-validation="error"][data-validation-for="${b}"]`), m = document.querySelector("[data-validation-error-global]");
-    (r || m != null && m.classList.contains("active")) && k(u, s, e, t);
-    const g = Array.from(u).some(
+    const c = document.querySelectorAll(`[data-validation="error"][data-validation-for="${b}"]`), m = document.querySelector("[data-validation-error-global]");
+    (r || m != null && m.classList.contains("active")) && k(c, s, e, t);
+    const g = Array.from(c).some(
       (i) => i.style.display === "block"
     );
     m == null || m.classList.toggle("active", g);
@@ -266,9 +266,9 @@ function T(e, t = !1, r) {
             `, e.appendChild(i)), a = Array.from(e.querySelectorAll(".step"));
   }
   const h = (i) => {
-    const c = e.querySelector('.step[data-confirmation="true"]');
-    if (!c) return;
-    c.querySelectorAll("[data-confirm]").forEach((f) => {
+    const u = e.querySelector('.step[data-confirmation="true"]');
+    if (!u) return;
+    u.querySelectorAll("[data-confirm]").forEach((f) => {
       var $, L;
       const p = f.getAttribute("data-confirm");
       if (!p) return;
@@ -285,27 +285,27 @@ function T(e, t = !1, r) {
     });
   }, b = () => {
     const i = (o + 1) / a.length * 100;
-    n && (n.style.width = `${i}%`), s.forEach((c, d) => {
-      c.classList.toggle("active", d <= o);
+    n && (n.style.width = `${i}%`), s.forEach((u, d) => {
+      u.classList.toggle("active", d <= o);
     }), l && (l.textContent = `Step ${o + 1}/${a.length}`);
   }, y = () => {
-    const c = a[o].querySelectorAll(
+    const u = a[o].querySelectorAll(
       'input, textarea, select, [contenteditable="true"], button[role="combobox"], div[role="listbox"], div[role="slider"], div[role="spinbutton"]'
     );
     let d = !0;
-    return c.forEach((f) => {
+    return u.forEach((f) => {
       x(f, r) || (d = !1);
     }), d;
   }, v = (i) => {
     a.forEach((p, P) => p.classList.toggle("active", P === i)), o = i, b();
-    const c = a[o], d = c.querySelector('[data-action="next"]'), f = c.querySelector('[data-action="confirm"]');
+    const u = a[o], d = u.querySelector('[data-action="next"]'), f = u.querySelector('[data-action="confirm"]');
     t && o === a.length - 2 ? (d && (d.style.display = "none"), f && (f.style.display = "inline-block")) : (d && (d.style.display = "inline-block"), f && (f.style.display = "none")), t && o === a.length - 1 && h(r || {
       formSelector: "#step-form",
       confirmationOptions: {
         delimiter: "、"
       }
     });
-  }, u = () => {
+  }, c = () => {
     if (!y()) {
       const d = a[o].querySelector("input:invalid, textarea:invalid, select:invalid");
       d && w(d, r == null ? void 0 : r.scrollOptions);
@@ -318,21 +318,21 @@ function T(e, t = !1, r) {
     i > o && !y() || v(i);
   };
   return v(o), e.addEventListener("click", (i) => {
-    const c = i.target;
-    if (c.tagName === "BUTTON") {
-      const d = c.getAttribute("data-action");
-      if (d === "next" || d === "confirm") u();
+    const u = i.target;
+    if (u.tagName === "BUTTON") {
+      const d = u.getAttribute("data-action");
+      if (d === "next" || d === "confirm") c();
       else if (d === "previous") m();
       else if (d === "edit") {
-        const f = parseInt(c.getAttribute("data-target-step") || "1") - 1;
+        const f = parseInt(u.getAttribute("data-target-step") || "1") - 1;
         v(f);
       }
     }
-  }), s.forEach((i, c) => {
-    i.addEventListener("click", () => g(c));
+  }), s.forEach((i, u) => {
+    i.addEventListener("click", () => g(u));
   }), {
     showStep: v,
-    handleNext: u,
+    handleNext: c,
     handlePrevious: m,
     updateProgressBar: b,
     updateConfirmationPage: h
@@ -390,6 +390,5 @@ function V(e) {
 }
 typeof window < "u" && (window.Formous = H);
 export {
-  H as Formous,
-  H as default
+  H as Formous
 };

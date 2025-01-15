@@ -20,5 +20,4 @@ declare const FormousInit: (options: FormousOptions) => {
     validateForm: () => boolean;
     validateField: (field: HTMLInputElement) => boolean;
 } | undefined;
-export default FormousInit;
 export { FormousInit as Formous };

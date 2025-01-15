@@ -119,8 +119,7 @@ function initializeFormous(options: FormousOptions) {
   };
 }
 
-// UMDモジュールとしてエクスポート
-export default FormousInit;
+// 名前付きエクスポートのみを使用
 export { FormousInit as Formous };
 
 // グローバル変数として公開
