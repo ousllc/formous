@@ -2,13 +2,14 @@ import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
 export default defineConfig({
+  base: './',
   plugins: [dts()],
   build: {
     outDir: 'dist',
     emptyOutDir: true,
     lib: {
       entry: 'src/index.ts',
-      name: 'MyLibrary',
+      name: 'Formous',
       fileName: 'index',
       formats: ['es', 'cjs', 'umd']
     },
@@ -18,7 +19,8 @@ export default defineConfig({
         globals: {
           lit: 'Lit'
         },
-        inlineDynamicImports: false
+        inlineDynamicImports: false,
+        format: 'iife'
       }
     }
   }

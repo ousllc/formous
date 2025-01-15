@@ -180,12 +180,12 @@ function x(e, t, r = !1) {
   const h = a || e.closest("div");
   if (h) {
     const u = h.querySelectorAll('[data-validation="error"]');
-    V(u, s, e, t);
+    k(u, s, e, t);
   }
   const b = e.getAttribute("name");
   if (b) {
     const u = document.querySelectorAll(`[data-validation="error"][data-validation-for="${b}"]`), m = document.querySelector("[data-validation-error-global]");
-    (r || m != null && m.classList.contains("active")) && V(u, s, e, t);
+    (r || m != null && m.classList.contains("active")) && k(u, s, e, t);
     const g = Array.from(u).some(
       (i) => i.style.display === "block"
     );
@@ -193,7 +193,7 @@ function x(e, t, r = !1) {
   }
   return n;
 }
-function T(e, t, r, a) {
+function C(e, t, r, a) {
   var l, o, h;
   if (console.log("Debug getErrorMessage:", {
     type: e,
@@ -217,16 +217,16 @@ function T(e, t, r, a) {
   }
   return console.log("Using default message:", r[e]), r[e];
 }
-function V(e, t, r, a) {
+function k(e, t, r, a) {
   e.forEach((n) => {
     const s = n.getAttribute("data-validation-type");
-    if (s) {
-      const l = T(s, r, t, a);
+    if (s && Object.keys(t).length > 0) {
+      const l = C(s, r, t, a);
       n.hasAttribute("data-error-fixed") || (n.innerHTML = l), n.style.display = t[s] ? "block" : "none";
     }
   });
 }
-function P(e, t = {}) {
+function w(e, t = {}) {
   const {
     offset: r = 50,
     behavior: a = "smooth",
@@ -249,10 +249,10 @@ function E(e, t) {
   return r.forEach((s) => {
     x(s, t, !0) || (a = !1, n || (n = s));
   }), !a && n && setTimeout(() => {
-    n && P(n, t.scrollOptions);
+    n && w(n, t.scrollOptions);
   }, 0), a;
 }
-function C(e, t = !1, r) {
+function T(e, t = !1, r) {
   let a = Array.from(e.querySelectorAll(".step"));
   const n = e.querySelector("#progress-fill"), s = e.querySelectorAll(".step-indicator"), l = e.querySelector("#step-progress");
   let o = 0;
@@ -269,14 +269,14 @@ function C(e, t = !1, r) {
     const c = e.querySelector('.step[data-confirmation="true"]');
     if (!c) return;
     c.querySelectorAll("[data-confirm]").forEach((f) => {
-      var L, w;
+      var $, L;
       const p = f.getAttribute("data-confirm");
       if (!p) return;
-      if ((L = e.querySelector(`fieldset input[name="${p}"]`)) == null ? void 0 : L.closest("fieldset")) {
+      if (($ = e.querySelector(`fieldset input[name="${p}"]`)) == null ? void 0 : $.closest("fieldset")) {
         const A = e.querySelectorAll(`input[name="${p}"]:checked`), F = Array.from(A).map((N) => {
           const q = N.nextElementSibling;
           return (q == null ? void 0 : q.textContent) || "";
-        }).filter(Boolean), M = ((w = i.confirmationOptions) == null ? void 0 : w.delimiter) || ",";
+        }).filter(Boolean), M = ((L = i.confirmationOptions) == null ? void 0 : L.delimiter) || ",";
         f.textContent = F.join(M);
       } else {
         const A = e.querySelector(`[name="${p}"]`);
@@ -297,7 +297,7 @@ function C(e, t = !1, r) {
       x(f, r) || (d = !1);
     }), d;
   }, v = (i) => {
-    a.forEach((p, $) => p.classList.toggle("active", $ === i)), o = i, b();
+    a.forEach((p, P) => p.classList.toggle("active", P === i)), o = i, b();
     const c = a[o], d = c.querySelector('[data-action="next"]'), f = c.querySelector('[data-action="confirm"]');
     t && o === a.length - 2 ? (d && (d.style.display = "none"), f && (f.style.display = "inline-block")) : (d && (d.style.display = "inline-block"), f && (f.style.display = "none")), t && o === a.length - 1 && h(r || {
       formSelector: "#step-form",
@@ -308,7 +308,7 @@ function C(e, t = !1, r) {
   }, u = () => {
     if (!y()) {
       const d = a[o].querySelector("input:invalid, textarea:invalid, select:invalid");
-      d && P(d, r == null ? void 0 : r.scrollOptions);
+      d && w(d, r == null ? void 0 : r.scrollOptions);
       return;
     }
     o < a.length - 1 && v(o + 1);
@@ -344,16 +344,17 @@ const O = {
   }
 }, D = O.required;
 console.log(`Custom rule found: ${D.message}`);
+typeof window < "u" && (window.Webflow = window.Webflow || []);
 const H = (e) => {
   if (e.enableWebflow) {
     window.Webflow.push(() => {
-      k(e);
+      V(e);
     });
     return;
   }
-  return k(e);
+  return V(e);
 };
-function k(e) {
+function V(e) {
   const t = document.querySelector(e.formSelector);
   if (!t) {
     console.error("Form not found");
@@ -373,7 +374,7 @@ function k(e) {
     }
     if (a.preventDefault(), !E(t, e)) {
       const l = t.querySelector("input:invalid, textarea:invalid, select:invalid");
-      l && P(l, e.scrollOptions);
+      l && w(l, e.scrollOptions);
       return;
     }
     const s = new FormData(t);
@@ -382,7 +383,7 @@ function k(e) {
     } catch (l) {
       console.error("Error:", l);
     }
-  }), e.enableConfirmationPage ? C(t, !0, e) : {
+  }), e.enableConfirmationPage ? T(t, !0, e) : {
     validateForm: () => E(t, e),
     validateField: (a) => x(a, e)
   };

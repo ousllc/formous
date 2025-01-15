@@ -14,6 +14,11 @@ declare global {
   }
 }
 
+// Webflowとの統合のためのグローバル変数初期化
+if (typeof window !== 'undefined') {
+  window.Webflow = window.Webflow || [];
+}
+
 /**
  * Formousのメイン初期化関数
  * @param options - フォームの設定オプション
@@ -22,7 +27,7 @@ declare global {
 const FormousInit = (options: FormousOptions) => {
   // Webflow統合モードの場合
   if (options.enableWebflow) {
-    (window as any).Webflow.push(() => {
+    window.Webflow.push(() => {
       initializeFormous(options);
     });
     return;
@@ -114,11 +119,11 @@ function initializeFormous(options: FormousOptions) {
   };
 }
 
-// ファクトリー関数をデフォルトエクスポート
+// UMDモジュールとしてエクスポート
 export default FormousInit;
-export { FormousInit as Formous };  // 名前付きエクスポートとしても提供
+export { FormousInit as Formous };
 
-// ブラウザ環境での使用のために、windowオブジェクトに追加
+// グローバル変数として公開
 if (typeof window !== 'undefined') {
   window.Formous = FormousInit;
 }

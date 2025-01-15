@@ -136,7 +136,7 @@ function getErrorMessage(type: string, field: HTMLInputElement, errorsByType: { 
 function updateErrorElements(elements: NodeListOf<Element>, errorsByType: { [key: string]: string }, field: HTMLInputElement, options?: FormousOptions) {
     elements.forEach(errorElement => {
         const targetType = errorElement.getAttribute('data-validation-type');
-        if (targetType) {
+        if (targetType && Object.keys(errorsByType).length > 0) {
             const message = getErrorMessage(targetType, field, errorsByType, options);
             if (!errorElement.hasAttribute('data-error-fixed')) {
                 (errorElement as HTMLElement).innerHTML = message;
