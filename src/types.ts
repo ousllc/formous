@@ -39,4 +39,12 @@ export type FormousOptions = {
         behavior?: 'auto' | 'smooth';
         duration?: string;
     };
+    
+    stepOptions?: {
+        stepSelector?: string;
+        progressFillSelector?: string;
+        indicatorSelector?: string;
+        progressSelector?: string;
+        activeClass?: string;
+    };
 }; 

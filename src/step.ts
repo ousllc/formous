@@ -3,10 +3,18 @@ import { FormousOptions } from './types';
 
 // ステップフォームを初期化する関数
 export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage: boolean = false, options?: FormousOptions) {
-    let steps = Array.from(form.querySelectorAll('.step'));
-    const progressBarFill = form.querySelector('#progress-fill') as HTMLElement;
-    const stepIndicators = form.querySelectorAll('.step-indicator');
-    const stepProgress = form.querySelector('#step-progress') as HTMLElement;
+    const {
+        stepSelector = '.step',
+        progressFillSelector = '#progress-fill',
+        indicatorSelector = '.step-indicator',
+        progressSelector = '#step-progress',
+        activeClass = 'active'
+    } = options?.stepOptions || {};
+
+    let steps = Array.from(form.querySelectorAll(stepSelector));
+    const progressBarFill = form.querySelector(progressFillSelector) as HTMLElement;
+    const stepIndicators = form.querySelectorAll(indicatorSelector);
+    const stepProgress = form.querySelector(progressSelector) as HTMLElement;
     let currentStepIndex = 0;
 
     if (enableConfirmationPage) {
@@ -24,7 +32,7 @@ export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage
             `;
             form.appendChild(confirmationStep);
         }
-        steps = Array.from(form.querySelectorAll('.step'));
+        steps = Array.from(form.querySelectorAll(stepSelector));
     }
 
     const updateConfirmationPage = (options: FormousOptions) => {
@@ -93,7 +101,7 @@ export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage
     };
 
     const showStep = (index: number) => {
-        steps.forEach((step, i) => step.classList.toggle('active', i === index));
+        steps.forEach((step, i) => step.classList.toggle(activeClass, i === index));
         currentStepIndex = index;
         updateProgressBar();
 
