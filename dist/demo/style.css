@@ -64,6 +64,20 @@ textarea {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+/* date picker と time picker のアイコンスタイル */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover,
+input[type="time"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
 input:focus,
 textarea:focus {
   outline: none;

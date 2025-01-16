@@ -28,10 +28,21 @@ export function validateField(field: HTMLInputElement, options?: FormousOptions,
     ];
 
     // type属性による追加のバリデーション
-    if (field.type === 'email') {
-        const rule = ValidationRules['email'];
+    const typeValidations = {
+        'email': 'email',
+        'url': 'url',
+        'date': 'date',
+        'time': 'time',
+        'tel': 'phone',
+        'number': 'numeric'
+    };
+
+    // type属性のバリデーション
+    if (field.type in typeValidations) {
+        const validationType = typeValidations[field.type as keyof typeof typeValidations];
+        const rule = ValidationRules[validationType];
         if (rule && !rule.validate(field.value, field)) {
-            errorsByType['email'] = rule.message(field);
+            errorsByType[validationType] = rule.message(field);
             isValid = false;
         }
     }
@@ -134,7 +145,6 @@ function getErrorMessage(type: string, field: HTMLInputElement, errorsByType: { 
 
 // エラー要素の更新を行うヘルパー関数
 function updateErrorElements(elements: NodeListOf<Element>, errorsByType: { [key: string]: string }, field: HTMLInputElement, options?: FormousOptions) {
-    const singleErrorMode = elements.length === 1;
     const hasErrors = Object.keys(errorsByType).length > 0;
 
     elements.forEach(errorElement => {
@@ -143,33 +153,41 @@ function updateErrorElements(elements: NodeListOf<Element>, errorsByType: { [key
         const hasInnerText = element.innerHTML.trim();
         const isFixed = element.hasAttribute('data-error-fixed');
 
-        if (targetType) {
-            const message = getErrorMessage(targetType, field, errorsByType, options);
-            if (isFixed) {
-                element.style.display = errorsByType[targetType] ? 'block' : 'none';
-                return;
-            }
-
-            const optionMessage = options?.validationMessages?.[targetType];
-            if (optionMessage) {
-                element.innerHTML = message;
-            } else if (hasInnerText) {
-            } else {
-                element.innerHTML = message;
-            }
-            element.style.display = errorsByType[targetType] ? 'block' : 'none';
-        } else if (singleErrorMode) {
-            const firstErrorType = Object.keys(errorsByType)[0];
-            const message = getErrorMessage(firstErrorType, field, errorsByType, options);
-            if (!isFixed) {
-                const optionMessage = options?.validationMessages?.[firstErrorType];
-                if (optionMessage || !hasInnerText) {
-                    element.innerHTML = message;
+        if (!targetType) {
+            // data-validation-typeがない場合の処理
+            if (hasErrors) {
+                // エラーが1つ以上ある場合
+                const firstErrorType = Object.keys(errorsByType)[0];
+                const message = getErrorMessage(firstErrorType, field, errorsByType, options);
+                
+                if (!isFixed) {
+                    const optionMessage = options?.validationMessages?.[firstErrorType];
+                    if (optionMessage || !hasInnerText) {
+                        element.innerHTML = message;
+                    }
                 }
+                element.style.display = 'block';
+            } else {
+                element.style.display = 'none';
             }
-            // すべてのバリデーションエラーがなくなれば非表示
-            element.style.display = hasErrors ? 'block' : 'none';
+            return;
         }
+
+        // data-validation-typeがある場合の既存の処理
+        const message = getErrorMessage(targetType, field, errorsByType, options);
+        if (isFixed) {
+            element.style.display = errorsByType[targetType] ? 'block' : 'none';
+            return;
+        }
+
+        const optionMessage = options?.validationMessages?.[targetType];
+        if (optionMessage) {
+            element.innerHTML = message;
+        } else if (hasInnerText) {
+        } else {
+            element.innerHTML = message;
+        }
+        element.style.display = errorsByType[targetType] ? 'block' : 'none';
     });
 }
 
@@ -188,33 +206,54 @@ export function smoothScroll(element: HTMLElement, options: FormousOptions['scro
         duration = '0.5s'
     } = options;
 
-    // CSSプロパティを一時的に設定してスクロール動作をカスタマイズ
+    // スクロールアニメーションの設定
     document.documentElement.style.setProperty('scroll-behavior', behavior);
     document.documentElement.style.setProperty('transition-duration', duration);
-    document.documentElement.style.setProperty('scroll-timeline-name', 'scroll');
 
     // 要素の上部マージンを設定してスクロール位置を調整
     element.style.scrollMargin = `${offset}px`;
 
+    // スクロール開始前の位置を記録
+    const startPosition = window.scrollY;
+
+    // 要素が既に表示されているかチェック
+    const rect = element.getBoundingClientRect();
+    const isVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+
+    if (isVisible) {
+        // 既に見えている場合は直接フォーカス
+        element.focus();
+        return;
+    }
+
     // 要素まで滑らかにスクロール
     element.scrollIntoView({
         behavior,
-        block: 'nearest',  // 最も近い位置にスクロール
+        block: 'nearest',
         inline: 'nearest'
     });
 
-    // スクロールアニメーション完了後の処理
-    setTimeout(() => {
-        // 一時的なCSSプロパティを削除
-        document.documentElement.style.removeProperty('scroll-behavior');
-        document.documentElement.style.removeProperty('transition-duration');
-        document.documentElement.style.removeProperty('scroll-timeline-name');
+    // スクロールの完了を監視
+    let lastPosition = window.scrollY;
+    const checkScrollEnd = () => {
+        const currentPosition = window.scrollY;
 
-        // スクロール完了後、少し遅延を入れてからフォーカスを設定
-        setTimeout(() => {
+        // スクロールが完了したかチェック
+        if (currentPosition === lastPosition && currentPosition !== startPosition) {
+            // スクロールが完了し、かつ位置が変わっている場合
+            // CSSプロパティをリセット
+            document.documentElement.style.removeProperty('scroll-behavior');
+            document.documentElement.style.removeProperty('transition-duration');
             element.focus();
-        }, 100);
-    }, parseFloat(duration) * 100);
+            return;
+        }
+
+        // まだスクロール中
+        lastPosition = currentPosition;
+        requestAnimationFrame(checkScrollEnd);
+    };
+
+    requestAnimationFrame(checkScrollEnd);
 }
 
 /**

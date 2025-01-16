@@ -52,6 +52,7 @@ export interface FormousOptions {
         indicatorSelector?: string;
         progressSelector?: string;
         activeClass?: string;
+        useDisplayNone?: boolean;
     };
     
     progressFillSelector?: string;

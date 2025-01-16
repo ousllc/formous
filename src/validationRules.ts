@@ -83,9 +83,28 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
         message: (field) => `Please match the requested format: ${field.getAttribute('data-pattern')}.`,
     },
     url: {
-        // URL形式か確認
-        validate: (value) => /^(https?:\/\/)?([\w\-]+)+([\w\-.]+)+(:\d+)?(\/[\w\-]*)*(\?[\w\-=&]*)?(#[\w\-]*)?$/.test(value),
-        message: () => 'Please enter a valid URL.',
+        validate: (value) => {
+            if (!value) return true;
+
+            try {
+                const url = new URL(value);
+                // プロトコルチェック
+                if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+                    return false;
+                }
+                // ドメインチェック
+                return /^([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/.test(url.hostname);
+            } catch {
+                try {
+                    const url = new URL(`https://${value}`);
+                    // ホスト名が正しい形式であることを確認
+                    return /^([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/.test(url.hostname);
+                } catch {
+                    return false;
+                }
+            }
+        },
+        message: () => 'URLの形式が正しくありません。',
     },
     date: {
         // 有効な日付か確認
@@ -219,5 +238,21 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
     
             return `Password must contain ${requirements.join(', ')}`;
         }
+    },
+    halfwidthKatakana: {
+        validate: (value) => {
+            if (!value) return true;
+            // 半角カタカナの正規表現
+            return /^[ｦ-ﾟ]+$/.test(value);
+        },
+        message: () => '半角カタカナで入力してください。',
+    },
+    zenkaku: {
+        validate: (value) => {
+            if (!value) return true;
+            // 全角文字（ひらがな・カタカナ・漢字・全角英数字・記号）の正規表現
+            return /^[^\x01-\x7E\xA1-\xDF]+$/.test(value);
+        },
+        message: () => '全角文字で入力してください。',
     },
 };

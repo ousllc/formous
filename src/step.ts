@@ -9,10 +9,24 @@ export function initializeStepForm(
     const {
         progressFillSelector = '#progress-fill',
         indicatorSelector = '.step-indicator',
-        progressSelector = '#step-progress'
+        progressSelector = '#step-progress',
+        stepOptions: {
+            useDisplayNone = false
+        } = {}
     } = options || {};
 
     let steps = Array.from(form.querySelectorAll('.step'));
+    
+    // 最初のステップ以外を非表示に
+    steps.forEach((step, index) => {
+        if (index !== 0) {
+            if (useDisplayNone) {
+                (step as HTMLElement).style.display = 'none';
+            }
+            step.classList.remove('active');
+        }
+    });
+    
     const progressBarFill = form.querySelector(progressFillSelector) as HTMLElement;
     const stepIndicators = form.querySelectorAll(indicatorSelector);
     const stepProgress = form.querySelector(progressSelector) as HTMLElement;
@@ -57,6 +71,9 @@ export function initializeStepForm(
 
     const showStep = (index: number) => {
         steps.forEach((step, i) => {
+            if (useDisplayNone) {
+                (step as HTMLElement).style.display = i === index ? 'block' : 'none';
+            }
             step.classList.toggle('active', i === index);
         });
         currentStepIndex = index;
