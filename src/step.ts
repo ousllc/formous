@@ -2,81 +2,38 @@ import { validateField, smoothScroll } from './validation';
 import { FormousOptions } from './types';
 
 // ステップフォームを初期化する関数
-export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage: boolean = false, options?: FormousOptions) {
+export function initializeStepForm(
+    form: HTMLFormElement,
+    options?: FormousOptions
+) {
     const {
         progressFillSelector = '#progress-fill',
         indicatorSelector = '.step-indicator',
         progressSelector = '#step-progress'
-    } = options?.stepOptions || {};
+    } = options || {};
 
     let steps = Array.from(form.querySelectorAll('.step'));
     const progressBarFill = form.querySelector(progressFillSelector) as HTMLElement;
     const stepIndicators = form.querySelectorAll(indicatorSelector);
     const stepProgress = form.querySelector(progressSelector) as HTMLElement;
+    const currentStepElement = form.querySelector('[data-step-current]') as HTMLElement;
+    const totalStepElement = form.querySelector('[data-step-total]') as HTMLElement;
     let currentStepIndex = 0;
-
-    if (enableConfirmationPage) {
-        let confirmationStep = form.querySelector('.step[data-confirmation="true"]') as HTMLElement | null;
-
-        if (!confirmationStep) {
-            confirmationStep = document.createElement('div');
-            confirmationStep.classList.add('step');
-            confirmationStep.setAttribute('data-confirmation', 'true');
-            confirmationStep.innerHTML = `
-              <h3>Confirmation</h3>
-              <div id="confirmation-content"></div>
-              <button type="button" data-action="previous">Back</button>
-              <input type="submit" data-wait="Please wait..." data-action="confirm" value="Submit">
-            `;
-            form.appendChild(confirmationStep);
-        }
-        steps = Array.from(form.querySelectorAll('.step'));
-    }
-
-    const updateConfirmationPage = (options: FormousOptions) => {
-        const confirmationStep = form.querySelector('.step[data-confirmation="true"]') as HTMLElement | null;
-        if (!confirmationStep) return;
-
-        // data-confirm属性を持つ要素をすべて取得
-        const confirmElements = confirmationStep.querySelectorAll('[data-confirm]');
-        
-        confirmElements.forEach(element => {
-            const fieldName = element.getAttribute('data-confirm');
-            if (!fieldName) return;
-
-            // チェックボックスグループの処理
-            const fieldset = form.querySelector(`fieldset input[name="${fieldName}"]`)?.closest('fieldset');
-            if (fieldset) {
-                const checkedBoxes = form.querySelectorAll(`input[name="${fieldName}"]:checked`);
-                const labels = Array.from(checkedBoxes).map(checkbox => {
-                    const label = checkbox.nextElementSibling as HTMLElement;
-                    return label?.textContent || '';
-                }).filter(Boolean);
-
-                const delimiter = options.confirmationOptions?.delimiter || ',';
-                element.textContent = labels.join(delimiter);
-            } else {
-                // 通常のinput要素の処理
-                const field = form.querySelector(`[name="${fieldName}"]`) as HTMLInputElement;
-                if (field) {
-                    element.textContent = field.value || '未入力';
-                } else {
-                    element.textContent = '未入力';
-                }
-            }
-        });
-    };
 
     const updateProgressBar = () => {
         const progressPercentage = ((currentStepIndex + 1) / steps.length) * 100;
         if (progressBarFill) progressBarFill.style.width = `${progressPercentage}%`;
+        if (stepProgress) stepProgress.setAttribute('aria-valuenow', String(progressPercentage));
 
         stepIndicators.forEach((indicator, index) => {
             indicator.classList.toggle('active', index <= currentStepIndex);
         });
 
-        if (stepProgress) {
-            stepProgress.textContent = `Step ${currentStepIndex + 1}/${steps.length}`;
+        if (currentStepElement) {
+            currentStepElement.textContent = String(currentStepIndex + 1);
+        }
+        if (totalStepElement) {
+            totalStepElement.textContent = String(steps.length);
         }
     };
 
@@ -99,29 +56,63 @@ export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage
     };
 
     const showStep = (index: number) => {
-        steps.forEach((step, i) => step.classList.toggle('active', i === index));
+        steps.forEach((step, i) => {
+            step.classList.toggle('active', i === index);
+        });
         currentStepIndex = index;
         updateProgressBar();
 
         const currentStep = steps[currentStepIndex];
-        const nextButton = currentStep.querySelector('[data-action="next"]') as HTMLButtonElement | null;
-        const confirmButton = currentStep.querySelector('[data-action="confirm"]') as HTMLButtonElement | null;
+        
+        if (currentStep.classList.contains('confirmation-step')) {
+            updateConfirmationPage(steps[currentStepIndex - 1], currentStep);
+        }
 
-        if (enableConfirmationPage && currentStepIndex === steps.length - 2) {
-            if (nextButton) nextButton.style.display = 'none';
-            if (confirmButton) confirmButton.style.display = 'inline-block';
-        } else {
-            if (nextButton) nextButton.style.display = 'inline-block';
-            if (confirmButton) confirmButton.style.display = 'none';
+        const nextButton = currentStep.querySelector('[data-action="next"]');
+        if (nextButton) {
+            (nextButton as HTMLElement).style.display = 'inline-block';
         }
-        if (enableConfirmationPage && currentStepIndex === steps.length - 1) {
-            updateConfirmationPage(options || {
-                formSelector: '#step-form',
-                confirmationOptions: {
-                    delimiter: '、'
+    };
+
+    const updateConfirmationPage = (_formStep: Element, confirmationStep: Element) => {
+        // 各セクションごとに処理
+        const confirmationSections = confirmationStep.querySelectorAll('.confirmation-section');
+        // デリミタの取得（デフォルトは','）
+        const delimiter = options?.confirmationOptions?.delimiter || ',';
+        
+        confirmationSections.forEach(section => {
+            const stepNumber = section.getAttribute('data-step');
+            if (!stepNumber) return;
+            
+            // セクション内の確認項目を更新
+            const confirmSpans = section.querySelectorAll('[data-confirm]');
+            confirmSpans.forEach(span => {
+                const fieldName = span.getAttribute('data-confirm');
+                if (!fieldName) return;
+                
+                // 対応する入力フィールドを検索
+                const field = form.querySelector(`[name="${fieldName}"]`);
+                if (!field) return;
+                let value = '';
+                switch ((field as HTMLInputElement).type) {
+                    case 'checkbox':
+                        // チェックボックスグループの場合
+                        const checkedBoxes = form.querySelectorAll(`input[name="${fieldName}"]:checked`);
+                        value = Array.from(checkedBoxes)
+                            .map(cb => (cb as HTMLInputElement).labels?.[0]?.textContent || (cb as HTMLInputElement).value)
+                            .join(delimiter);
+                        break;
+                    case 'radio':
+                        const checkedRadio = form.querySelector(`input[name="${fieldName}"]:checked`) as HTMLInputElement;
+                        value = checkedRadio ? (checkedRadio.labels?.[0]?.textContent || checkedRadio.value) : '';
+                        break;
+                    default:
+                        value = (field as HTMLInputElement).value;
                 }
+                
+                span.textContent = value || '未入力';
             });
-        }
+        });
     };
 
     const handleNext = () => {
@@ -176,8 +167,7 @@ export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage
         showStep,
         handleNext,
         handlePrevious,
-        updateProgressBar,
-        updateConfirmationPage,
+        updateProgressBar
     };
 }
 

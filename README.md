@@ -128,7 +128,6 @@ Formous({
     },
     
     // 確認ページ機能
-    enableConfirmationPage: true,  // 確認ページを有効化
     confirmationOptions: {
         delimiter: '/'  // 複数選択項目の区切り文字（デフォルト: '、'）
     },
@@ -141,11 +140,52 @@ Formous({
             // カスタムのsubmit処理
             console.log('Custom submit:', form);
         }
+    },
+    
+    // カスタム送信処理
+    onSubmit: async (formData: FormData) => {
+        // APIにデータを送信する例
+        const response = await fetch('/api/submit', {
+            method: 'POST',
+            body: formData
+        });
     }
 });
 ```
 
 各オプションは必要に応じて設定可能です。設定しない場合はデフォルト値が使用されます。
+
+### カスタム送信処理（onSubmit）
+
+フォームの送信処理をカスタマイズできます。`onSubmit`オプションを使用することで、独自の送信ロジックを実装できます。
+
+#### FormDataの活用例
+
+```javascript
+onSubmit: async (formData: FormData) => {
+    // FormDataの中身を確認
+    for (const [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
+
+    // JSONに変換する場合
+    const data = Object.fromEntries(formData.entries());
+    
+    // APIに送信
+    const response = await fetch('/api/submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+}
+```
+
+#### 注意事項
+- `onSubmit`は必ず`async`関数として定義してください
+- 送信処理中のエラーは自動的にキャッチされます
+- 送信に失敗した場合は、コンソールにエラーが出力されます
 
 ## バリデーション機能
 

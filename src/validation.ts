@@ -213,8 +213,8 @@ export function smoothScroll(element: HTMLElement, options: FormousOptions['scro
         // スクロール完了後、少し遅延を入れてからフォーカスを設定
         setTimeout(() => {
             element.focus();
-        }, 2000);
-    }, parseFloat(duration) * 1000);
+        }, 100);
+    }, parseFloat(duration) * 100);
 }
 
 /**
@@ -290,7 +290,7 @@ export function Formous(options: FormousOptions) {
             console.log('5. Current index:', currentIndex);
 
             // アクションの処理
-            if (action === 'next' || action === 'confirm') {
+            if (action === 'next') {
                 console.log('6. Processing next/confirm action');
                 if (currentIndex < steps.length - 1) {
                     // 現在のステップを非表示

@@ -6,15 +6,24 @@ import { validateField, validateForm, addCustomValidationRules, smoothScroll } f
 import { initializeStepForm } from './step';
 import { FormousOptions } from './types';
 
-// グローバル型定義の拡張
+// グローバルな型定義を拡張するための宣言
+// これにより、windowオブジェクトに新しいプロパティを追加できる
 declare global {
+  // ブラウザのWindowインターフェースを拡張
   interface Window {
+    // FormousInitと同じ型を持つFormousプロパティを追加
+    // これにより window.Formous = FormousInit; のような代入が可能になる
     Formous: typeof FormousInit;
+
+    // Webflowプロパティを追加
+    // any[]は「どんな型でも許容する配列」を意味する
+    // window.Webflow.push() などの操作が可能になる
     Webflow: any[];
   }
 }
 
-// Webflowとの統合のためのグローバル変数初期化
+// 実際の使用例：
+// window.Webflow が未定義の場合は空配列で初期化
 if (typeof window !== 'undefined') {
   window.Webflow = window.Webflow || [];
 }
@@ -27,13 +36,17 @@ if (typeof window !== 'undefined') {
 const FormousInit = (options: FormousOptions) => {
   // Webflow統合モードの場合
   if (options.enableWebflow) {
+    // window.Webflow.push() は Webflowの機能
+    // DOMContentLoaded後に実行されることが保証される
+    // コールバック関数として initializeFormous を登録
     window.Webflow.push(() => {
       initializeFormous(options);
     });
-    return;
+    return;  // Webflowモードでは即時実行せずにreturn
   }
 
-  // 通常モードの場合
+  // 通常モードの場合（Webflow統合なし）
+  // 即時実行してその結果を返す
   return initializeFormous(options);
 }
 
@@ -108,7 +121,7 @@ function initializeFormous(options: FormousOptions) {
   });
 
   // ステップフォームを常に初期化
-  return initializeStepForm(form, options.enableConfirmationPage || false, options);
+  return initializeStepForm(form, options);
 
   // フォーム操作用のメソッドを返却
   return {

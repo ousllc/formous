@@ -154,11 +154,11 @@
         </div>
 
         <button type="button" data-action="previous">Previous</button>
-        <button type="button" data-action="confirm">確認する</button>
+        <button type="button" data-action="next">確認する</button>
       </div>
 
       <!-- 確認ページ -->
-      <div class="step" data-confirmation="true">
+      <div class="step confirmation-step" data-confirmation="true">
         <h3>Confirmation</h3>
 
         <!-- Step 1の確認 -->
@@ -202,7 +202,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       Formous({
         formSelector: '#step-form',
-        enableConfirmationPage: true,
         scrollOptions: {
           offset: 50,
           duration: '2s',
