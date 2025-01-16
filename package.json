@@ -22,11 +22,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:all": "npm run build && npm run build:demo",
     "build:demo": "vite build --config vite.demo.config.ts && npm run copy-assets",
+    "build:all": "npm run build && npm run build:demo",
     "preview": "vite preview",
-    "copy-assets": "cp -r src/style.css dist/demo/",
-    "prepublishOnly": "npm run build"
+    "copy-assets": "cp -r src/style.css dist/demo/"
   },
   "dependencies": {
     "lit": "^3.2.1",

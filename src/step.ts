@@ -15,6 +15,24 @@ export function initializeStepForm(form: HTMLFormElement, enableConfirmationPage
     const stepProgress = form.querySelector(progressSelector) as HTMLElement;
     let currentStepIndex = 0;
 
+    if (enableConfirmationPage) {
+        let confirmationStep = form.querySelector('.step[data-confirmation="true"]') as HTMLElement | null;
+
+        if (!confirmationStep) {
+            confirmationStep = document.createElement('div');
+            confirmationStep.classList.add('step');
+            confirmationStep.setAttribute('data-confirmation', 'true');
+            confirmationStep.innerHTML = `
+              <h3>Confirmation</h3>
+              <div id="confirmation-content"></div>
+              <button type="button" data-action="previous">Back</button>
+              <input type="submit" data-wait="Please wait..." data-action="confirm" value="Submit">
+            `;
+            form.appendChild(confirmationStep);
+        }
+        steps = Array.from(form.querySelectorAll('.step'));
+    }
+
     const updateConfirmationPage = (options: FormousOptions) => {
         const confirmationStep = form.querySelector('.step[data-confirmation="true"]') as HTMLElement | null;
         if (!confirmationStep) return;

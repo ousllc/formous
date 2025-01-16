@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Form | Formous</title>
+  <script type="module" crossorigin src="../assets/index.GTAltUAn.js"></script>
+  <link rel="stylesheet" crossorigin href="../assets/style.BRSaEYeu.css">
+</head>
+
+<body>
+  <div class="container">
+    <nav class="nav-links">
+      <a href="../index.html" class="nav-link">← メインページに戻る</a>
+    </nav>
+
+    <form id="simple-form" novalidate>
+      <!-- 基本情報 -->
+      <div class="form-section">
+        <h4>基本情報</h4>
+        
+        <!-- 名前 -->
+        <div>
+          <label for="name">名前:</label>
+          <input type="text" id="name" name="name" minlength="2" maxlength="30" required />
+          <div data-validation="error" data-validation-type="required">必須項目です</div>
+          <div data-validation="error" data-validation-type="minlength">2文字以上で入力してください</div>
+        </div>
+
+        <!-- メール -->
+        <div>
+          <label for="email">メールアドレス:</label>
+          <input type="email" id="email" name="email" required />
+          <div data-validation="error" data-validation-type="required">必須項目です</div>
+          <div data-validation="error" data-validation-type="email">正しいメールアドレスを入力してください</div>
+        </div>
+
+        <!-- 電話番号 -->
+        <div>
+          <label for="phone">電話番号:</label>
+          <input type="tel" id="phone" name="phone" data-validation="phone" required />
+          <div data-validation="error" data-validation-type="phone">有効な電話番号を入力してください</div>
+        </div>
+      </div>
+
+      <!-- 興味のある分野 -->
+      <div class="form-section">
+        <fieldset data-validation="checkbox-group" data-group-min="1" data-group-max="3">
+          <legend>興味のある分野（1つ以上3つまで）:</legend>
+          <div>
+            <input type="checkbox" id="interest-web" name="interests" value="web">
+            <label for="interest-web">Web開発</label>
+          </div>
+          <div>
+            <input type="checkbox" id="interest-mobile" name="interests" value="mobile">
+            <label for="interest-mobile">モバイルアプリ</label>
+          </div>
+          <div>
+            <input type="checkbox" id="interest-ai" name="interests" value="ai">
+            <label for="interest-ai">AI/機械学習</label>
+          </div>
+          <div>
+            <input type="checkbox" id="interest-game" name="interests" value="game">
+            <label for="interest-game">ゲーム開発</label>
+          </div>
+          <div data-validation="error" data-validation-type="checkbox-group">
+            1つ以上3つまでの項目を選択してください
+          </div>
+        </fieldset>
+      </div>
+
+      <!-- お問い合わせ内容 -->
+      <div class="form-section">
+        <label for="message">お問い合わせ内容:</label>
+        <textarea id="message" name="message" required minlength="10" maxlength="1000"></textarea>
+        <div data-validation="error" data-validation-type="required">必須項目です</div>
+        <div data-validation="error" data-validation-type="minlength">10文字以上で入力してください</div>
+      </div>
+
+      <button type="submit">送信する</button>
+
+      <!-- グローバルエラーメッセージ -->
+      <div class="global-errors" data-validation-error-global>
+        <div data-validation="error" data-validation-type="required" data-validation-for="name">
+          名前は必須項目です
+        </div>
+        <div data-validation="error" data-validation-type="required" data-validation-for="email">
+          メールアドレスは必須項目です
+        </div>
+        <div data-validation="error" data-validation-type="email" data-validation-for="email">
+          正しいメールアドレスの形式で入力してください
+        </div>
+        <div data-validation="error" data-validation-type="required" data-validation-for="phone">
+          電話番号は必須項目です
+        </div>
+        <div data-validation="error" data-validation-type="checkbox-group" data-validation-for="interests">
+          興味のある分野を1つ以上選択してください
+        </div>
+        <div data-validation="error" data-validation-type="required" data-validation-for="message">
+          お問い合わせ内容は必須項目です
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <style>
+    .global-errors {
+      margin-top: 20px;
+      padding: 15px;
+      border-top: 1px solid #ddd;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      Formous({
+        formSelector: '#simple-form',
+        scrollOptions: {
+          offset: 50,
+          duration: '2s',
+          behavior: 'smooth'
+        },
+        validationMessages: {
+          required: '必須項目です',
+          email: 'メールアドレスの形式が正しくありません',
+          minlength: (field) => `${field.getAttribute('minlength')}文字以上で入力してください`,
+          maxlength: (field) => `${field.getAttribute('maxlength')}文字以下で入力してください`,
+          phone: '有効な電話番号を入力してください'
+        },
+        customRules: {
+          phone: {
+            validate: (value) => /^[0-9-]{10,}$/.test(value),
+            message: () => '有効な電話番号を入力してください'
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html> 
