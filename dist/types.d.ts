@@ -9,10 +9,6 @@ export interface FormousOptions {
         preventSubmit?: boolean;
         customSubmit?: (form: HTMLFormElement) => void;
     };
-    enableConfirmationPage?: boolean;
-    confirmationOptions?: {
-        delimiter?: string;
-    };
     validationMessages?: {
         required?: string | ((field: HTMLInputElement) => string);
         email?: string | ((field: HTMLInputElement) => string);
@@ -48,5 +44,13 @@ export interface FormousOptions {
         progressFillSelector?: string;
         indicatorSelector?: string;
         progressSelector?: string;
+        activeClass?: string;
+    };
+    progressFillSelector?: string;
+    indicatorSelector?: string;
+    progressSelector?: string;
+    onSubmit?: (data: FormData) => Promise<void>;
+    confirmationOptions?: {
+        delimiter?: string;
     };
 }

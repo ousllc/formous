@@ -15,7 +15,6 @@ declare const FormousInit: (options: FormousOptions) => {
     handleNext: () => void;
     handlePrevious: () => void;
     updateProgressBar: () => void;
-    updateConfirmationPage: (options: FormousOptions) => void;
 } | {
     validateForm: () => boolean;
     validateField: (field: HTMLInputElement) => boolean;
