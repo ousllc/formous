@@ -30,9 +30,6 @@ Formousは、フォームの実装を簡単にするTypeScriptライブラリで
 
 ```bash
 npm install formous
-
-# または、特定のバージョンを指定
-npm install formous@v0.1.0-beta.6
 ```
 
 ## 基本的な使い方
@@ -68,19 +65,6 @@ Formous({
 });
 ```
 
-### 開発者向けインストール
-
-```bash
-# npmを使用
-npm install formous
-
-# または、yarnを使用
-yarn add formous
-
-# または、pnpmを使用
-pnpm add formous
-```
-
 ## オプション設定
 
 Formousは以下のオプションで初期化できます：
@@ -92,39 +76,49 @@ Formous({
     
     // バリデーションメッセージのカスタマイズ
     validationMessages: {
-        required: '必須項目です',  // 必須項目のエラー
-        email: 'メールアドレスの形式が正しくありません',  // メール形式のエラー
-        minlength: (field) => `${field.getAttribute('minlength')}文字以上で入力してください`,  // 最小文字数
-        maxlength: (field) => `${field.getAttribute('maxlength')}文字以下で入力してください`,  // 最大文字数
-        min: (field) => `${field.getAttribute('min')}以上の値を入力してください`,  // 最小値
-        max: (field) => `${field.getAttribute('max')}以下の値を入力してください`,  // 最大値
-        password: 'パスワードの要件を満たしていません'  // パスワードのエラー
+        required: '必須項目です',
+        email: 'メールアドレスの形式が正しくありません',
+        minlength: (field) => `${field.getAttribute('minlength')}文字以上で入力してください`,
+        maxlength: (field) => `${field.getAttribute('maxlength')}文字以下で入力してください`,
+        min: (field) => `${field.getAttribute('min')}以上の値を入力してください`,
+        max: (field) => `${field.getAttribute('max')}以下の値を入力してください`,
+        password: 'パスワードの要件を満たしていません'
     },
     
     // パスワードの要件をカスタマイズ
     validationPatterns: {
         password: {
-            minLength: 4,           // 最小文字数（デフォルト: 8）
-            maxLength: 20,          // 最大文字数（デフォルト: 100）
-            requireUppercase: true, // 大文字必須（デフォルト: true）
-            requireNumber: true,    // 数字必須（デフォルト: true）
-            requireSymbol: false    // 記号必須（デフォルト: true）
+            minLength: 4,
+            maxLength: 20,
+            requireUppercase: true,
+            requireNumber: true,
+            requireSymbol: false
         }
     },
     
     // カスタムバリデーションルールの追加
     customRules: {
         postalCode: {
-            validate: (value) => /^\d{3}-?\d{4}$/.test(value),  // 郵便番号の形式をチェック
+            validate: (value) => /^\d{3}-?\d{4}$/.test(value),
             message: () => '正しい郵便番号の形式で入力してください'
         }
     },
     
     // スクロール設定
     scrollOptions: {
-        offset: 50,            // スクロール時の上部マージン（px）
-        behavior: 'smooth',    // スクロール動作（'auto'または'smooth'）
-        duration: '0.5s'       // アニメーション時間
+        offset: 50,
+        behavior: 'smooth',
+        duration: '0.5s'
+    },
+    
+    // ステップフォームの設定
+    stepOptions: {
+        progressFillSelector: '#progress-fill',  // プログレスバーの要素
+        indicatorSelector: '.step-indicator',    // ステップインジケーターの要素
+        progressSelector: '#step-progress',      // プログレス要素
+        stepActiveClass: 'active',              // アクティブなステップのクラス
+        indicatorActiveClass: 'active',         // アクティブなインジケーターのクラス
+        useDisplayNone: false                   // display: noneを使用するか
     },
     
     // 確認ページ機能
@@ -133,18 +127,16 @@ Formous({
     },
     
     // Webflow統合
-    enableWebflow: true,  // Webflow機能を有効化
+    enableWebflow: true,
     webflowOptions: {
-        preventSubmit: true,  // デフォルトのsubmit処理を防ぐ
+        preventSubmit: true,
         customSubmit: (form) => {
-            // カスタムのsubmit処理
             console.log('Custom submit:', form);
         }
     },
     
     // カスタム送信処理
     onSubmit: async (formData: FormData) => {
-        // APIにデータを送信する例
         const response = await fetch('/api/submit', {
             method: 'POST',
             body: formData
