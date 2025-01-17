@@ -73,17 +73,17 @@ export function initializeStepForm(
 
     const showStep = (index: number) => {
         steps.forEach((step, i) => {
+            step.classList.toggle(stepActiveClass, i === index);
             if (useDisplayNone) {
                 (step as HTMLElement).style.display = i === index ? 'block' : 'none';
             }
-            step.classList.toggle(stepActiveClass, i === index);
         });
         currentStepIndex = index;
         updateProgressBar();
 
         const currentStep = steps[currentStepIndex];
         
-        if (currentStep.classList.contains('confirmation-step')) {
+        if (currentStep && currentStep.hasAttribute('data-confirmation')) {
             updateConfirmationPage(steps[currentStepIndex - 1], currentStep);
         }
 
@@ -146,6 +146,8 @@ export function initializeStepForm(
         }
         
         if (currentStepIndex < steps.length - 1) {
+            const formElement = form.closest('form') || form;
+            smoothScroll(formElement, options?.scrollOptions);
             showStep(currentStepIndex + 1);
         }
     };
