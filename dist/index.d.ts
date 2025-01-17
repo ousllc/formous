@@ -15,8 +15,5 @@ declare const FormousInit: (options: FormousOptions) => {
     handleNext: () => void;
     handlePrevious: () => void;
     updateProgressBar: () => void;
-} | {
-    validateForm: () => boolean;
-    validateField: (field: HTMLInputElement) => boolean;
 } | undefined;
 export { FormousInit as Formous };
