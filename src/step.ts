@@ -71,6 +71,37 @@ export function initializeStepForm(
         return isValid;
     };
 
+    const updateConfirmationPage = () => {
+        const delimiter = options?.confirmationOptions?.delimiter || ',';
+        
+        const confirmSpans = form.querySelectorAll('[data-confirm]');
+        confirmSpans.forEach(span => {
+            const fieldName = span.getAttribute('data-confirm');
+            if (!fieldName) return;
+            
+            const field = form.querySelector(`[name="${fieldName}"]`);
+            if (!field) return;
+
+            let value = '';
+            switch ((field as HTMLInputElement).type) {
+                case 'checkbox':
+                    const checkedBoxes = form.querySelectorAll(`input[name="${fieldName}"]:checked`);
+                    value = Array.from(checkedBoxes)
+                        .map(cb => (cb as HTMLInputElement).labels?.[0]?.textContent || (cb as HTMLInputElement).value)
+                        .join(delimiter);
+                    break;
+                case 'radio':
+                    const checkedRadio = form.querySelector(`input[name="${fieldName}"]:checked`) as HTMLInputElement;
+                    value = checkedRadio ? (checkedRadio.labels?.[0]?.textContent || checkedRadio.value) : '';
+                    break;
+                default:
+                    value = (field as HTMLInputElement).value;
+            }
+            
+            span.textContent = value || '未入力';
+        });
+    };
+
     const showStep = (index: number) => {
         steps.forEach((step, i) => {
             step.classList.toggle(stepActiveClass, i === index);
@@ -83,55 +114,12 @@ export function initializeStepForm(
 
         const currentStep = steps[currentStepIndex];
         
-        if (currentStep && currentStep.hasAttribute('data-confirmation')) {
-            updateConfirmationPage(steps[currentStepIndex - 1], currentStep);
-        }
+        updateConfirmationPage();
 
         const nextButton = currentStep.querySelector('[data-action="next"]');
         if (nextButton) {
             (nextButton as HTMLElement).style.display = 'inline-block';
         }
-    };
-
-    const updateConfirmationPage = (_formStep: Element, confirmationStep: Element) => {
-        // 各セクションごとに処理
-        const confirmationSections = confirmationStep.querySelectorAll('.confirmation-section');
-        // デリミタの取得（デフォルトは','）
-        const delimiter = options?.confirmationOptions?.delimiter || ',';
-        
-        confirmationSections.forEach(section => {
-            const stepNumber = section.getAttribute('data-step');
-            if (!stepNumber) return;
-            
-            // セクション内の確認項目を更新
-            const confirmSpans = section.querySelectorAll('[data-confirm]');
-            confirmSpans.forEach(span => {
-                const fieldName = span.getAttribute('data-confirm');
-                if (!fieldName) return;
-                
-                // 対応する入力フィールドを検索
-                const field = form.querySelector(`[name="${fieldName}"]`);
-                if (!field) return;
-                let value = '';
-                switch ((field as HTMLInputElement).type) {
-                    case 'checkbox':
-                        // チェックボックスグループの場合
-                        const checkedBoxes = form.querySelectorAll(`input[name="${fieldName}"]:checked`);
-                        value = Array.from(checkedBoxes)
-                            .map(cb => (cb as HTMLInputElement).labels?.[0]?.textContent || (cb as HTMLInputElement).value)
-                            .join(delimiter);
-                        break;
-                    case 'radio':
-                        const checkedRadio = form.querySelector(`input[name="${fieldName}"]:checked`) as HTMLInputElement;
-                        value = checkedRadio ? (checkedRadio.labels?.[0]?.textContent || checkedRadio.value) : '';
-                        break;
-                    default:
-                        value = (field as HTMLInputElement).value;
-                }
-                
-                span.textContent = value || '未入力';
-            });
-        });
     };
 
     const handleNext = () => {
@@ -159,8 +147,16 @@ export function initializeStepForm(
     };
 
     const handleIndicatorClick = (index: number) => {
-        if (index > currentStepIndex && !validateCurrentStep()) {
-            return;
+        if (index > currentStepIndex) {
+            const isValid = validateCurrentStep();
+            if (!isValid) {
+                const currentStep = steps[currentStepIndex];
+                const firstErrorField = currentStep.querySelector('input:invalid, textarea:invalid, select:invalid') as HTMLElement;
+                if (firstErrorField) {
+                    smoothScroll(firstErrorField, options?.scrollOptions);
+                }
+                return;
+            }
         }
         showStep(index);
     };

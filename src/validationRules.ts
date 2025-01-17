@@ -97,26 +97,9 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
     url: {
         validate: (value) => {
             if (!value) return true;
-
-            try {
-                const url = new URL(value);
-                // プロトコルチェック
-                if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-                    return false;
-                }
-                // ドメインチェック
-                return /^([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/.test(url.hostname);
-            } catch {
-                try {
-                    const url = new URL(`https://${value}`);
-                    // ホスト名が正しい形式であることを確認
-                    return /^([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/.test(url.hostname);
-                } catch {
-                    return false;
-                }
-            }
+            return /^https?:\/\/([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]*)?$/.test(value);
         },
-        message: () => 'URLの形式が正しくありません。',
+        message: () => 'Please enter a valid URL.',
     },
     date: {
         // 有効な日付か確認
