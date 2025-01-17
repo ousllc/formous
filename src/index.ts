@@ -93,7 +93,14 @@ function initializeFormous(options: FormousOptions) {
         e.stopPropagation();
         return;
       }
-      return;  // Webflowの標準送信を許可
+      
+      if (options?.webflowOptions?.customSubmit) {
+        e.preventDefault();
+        e.stopPropagation();
+        options.webflowOptions.customSubmit(form);
+      }
+      // カスタム送信がない場合は、Webflowのデフォルト送信を許可
+      return;
     }
 
     // 通常モードでの送信処理
