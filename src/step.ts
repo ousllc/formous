@@ -11,7 +11,9 @@ export function initializeStepForm(
         indicatorSelector = '.step-indicator',
         progressSelector = '#step-progress',
         stepOptions: {
-            useDisplayNone = false
+            useDisplayNone = false,
+            stepActiveClass = 'active',
+            indicatorActiveClass = 'active'
         } = {}
     } = options || {};
 
@@ -40,7 +42,7 @@ export function initializeStepForm(
         if (stepProgress) stepProgress.setAttribute('aria-valuenow', String(progressPercentage));
 
         stepIndicators.forEach((indicator, index) => {
-            indicator.classList.toggle('active', index <= currentStepIndex);
+            indicator.classList.toggle(indicatorActiveClass, index === currentStepIndex);
         });
 
         if (currentStepElement) {
@@ -74,7 +76,7 @@ export function initializeStepForm(
             if (useDisplayNone) {
                 (step as HTMLElement).style.display = i === index ? 'block' : 'none';
             }
-            step.classList.toggle('active', i === index);
+            step.classList.toggle(stepActiveClass, i === index);
         });
         currentStepIndex = index;
         updateProgressBar();
