@@ -29,11 +29,11 @@ export function initializeStepForm(
         }
     });
     
-    const progressBarFill = form.querySelector(progressFillSelector) as HTMLElement;
-    const stepIndicators = form.querySelectorAll(indicatorSelector);
-    const stepProgress = form.querySelector(progressSelector) as HTMLElement;
-    const currentStepElement = form.querySelector('[data-step-current]') as HTMLElement;
-    const totalStepElement = form.querySelector('[data-step-total]') as HTMLElement;
+    const progressBarFill = document.querySelector(progressFillSelector) as HTMLElement;
+    const stepIndicators = document.querySelectorAll(indicatorSelector);
+    const stepProgress = document.querySelector(progressSelector) as HTMLElement;
+    const currentStepElement = document.querySelector('[data-step-current]') as HTMLElement;
+    const totalStepElement = document.querySelector('[data-step-total]') as HTMLElement;
     let currentStepIndex = 0;
 
     const updateProgressBar = () => {
