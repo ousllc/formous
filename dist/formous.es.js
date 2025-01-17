@@ -1,9 +1,15 @@
-const W = {
+const _ = {
   required: {
     // 入力が空でないか確認
     validate: (e, t) => {
-      var a;
-      return !(t.hasAttribute("required") || ((a = t.getAttribute("data-validation")) == null ? void 0 : a.includes("required"))) || e.trim().length > 0;
+      var a, n;
+      const r = t.hasAttribute("required") || ((a = t.getAttribute("data-validation")) == null ? void 0 : a.includes("required")) || t.closest('fieldset[data-validation="required"]') !== null;
+      if (r && t.type === "radio") {
+        const i = t.getAttribute("name");
+        if (i)
+          return !!((n = t.closest("form")) == null ? void 0 : n.querySelector(`input[name="${i}"]:checked`));
+      }
+      return !r || e.trim().length > 0;
     },
     message: () => "This field is required."
   },
@@ -63,9 +69,21 @@ const W = {
     message: (e) => `Please match the requested format: ${e.getAttribute("data-pattern")}.`
   },
   url: {
-    // URL形式か確認
-    validate: (e) => /^(https?:\/\/)?([\w\-]+)+([\w\-.]+)+(:\d+)?(\/[\w\-]*)*(\?[\w\-=&]*)?(#[\w\-]*)?$/.test(e),
-    message: () => "Please enter a valid URL."
+    validate: (e) => {
+      if (!e) return !0;
+      try {
+        const t = new URL(e);
+        return t.protocol !== "http:" && t.protocol !== "https:" ? !1 : /^([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/.test(t.hostname);
+      } catch {
+        try {
+          const t = new URL(`https://${e}`);
+          return /^([a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/.test(t.hostname);
+        } catch {
+          return !1;
+        }
+      }
+    },
+    message: () => "URLの形式が正しくありません。"
   },
   date: {
     // 有効な日付か確認
@@ -128,8 +146,8 @@ const W = {
     validate: (e, t) => {
       const r = t.closest('fieldset[data-validation="checkbox-group"]');
       if (!r) return !0;
-      const a = r.querySelectorAll('input[type="checkbox"]'), n = parseInt(r.getAttribute("data-group-min") || "0", 10), s = r.getAttribute("data-group-max") ? parseInt(r.getAttribute("data-group-max") || "0", 10) : a.length, i = Array.from(a).filter((d) => d.checked).length;
-      return !r.getAttribute("data-group-min") && i > s || !r.getAttribute("data-group-max") && i < n ? !1 : i >= n && i <= s;
+      const a = r.querySelectorAll('input[type="checkbox"]'), n = parseInt(r.getAttribute("data-group-min") || "0", 10), i = r.getAttribute("data-group-max") ? parseInt(r.getAttribute("data-group-max") || "0", 10) : a.length, l = Array.from(a).filter((u) => u.checked).length;
+      return !r.getAttribute("data-group-min") && l > i || !r.getAttribute("data-group-max") && l < n ? !1 : l >= n && l <= i;
     },
     message: (e) => {
       const t = e.closest('fieldset[data-validation="checkbox-group"]'), r = (t == null ? void 0 : t.getAttribute("data-group-min")) || "0", a = (t == null ? void 0 : t.getAttribute("data-group-max")) || "∞";
@@ -147,272 +165,314 @@ const W = {
   },
   password: {
     validate: (e, t, r) => {
-      var g;
-      const a = ((g = r == null ? void 0 : r.validationPatterns) == null ? void 0 : g.password) || {}, n = a.minLength ?? 8, s = a.maxLength ?? 100, i = a.requireUppercase ?? !0, d = a.requireNumber ?? !0, l = a.requireSymbol ?? !0;
-      return !(e.length < n || e.length > s || i && !/[A-Z]/.test(e) || d && !/\d/.test(e) || l && !/[!@#$%^&*]/.test(e));
+      var d;
+      const a = ((d = r == null ? void 0 : r.validationPatterns) == null ? void 0 : d.password) || {}, n = a.minLength ?? 8, i = a.maxLength ?? 100, l = a.requireUppercase ?? !0, u = a.requireNumber ?? !0, o = a.requireSymbol ?? !0;
+      return !(e.length < n || e.length > i || l && !/[A-Z]/.test(e) || u && !/\d/.test(e) || o && !/[!@#$%^&*]/.test(e));
     },
     message: (e, t) => {
-      var g;
-      const r = ((g = t == null ? void 0 : t.validationPatterns) == null ? void 0 : g.password) || {}, a = r.minLength ?? 8, n = r.maxLength ?? 100, s = r.requireUppercase ?? !0, i = r.requireNumber ?? !0, d = r.requireSymbol ?? !0, l = [];
-      return l.push(`at least ${a} characters${n !== 100 ? `, maximum ${n} characters` : ""}`), s && l.push("uppercase letter"), i && l.push("number"), d && l.push("special character (!@#$%^&*)"), `Password must contain ${l.join(", ")}`;
+      var d;
+      const r = ((d = t == null ? void 0 : t.validationPatterns) == null ? void 0 : d.password) || {}, a = r.minLength ?? 8, n = r.maxLength ?? 100, i = r.requireUppercase ?? !0, l = r.requireNumber ?? !0, u = r.requireSymbol ?? !0, o = [];
+      return o.push(`at least ${a} characters${n !== 100 ? `, maximum ${n} characters` : ""}`), i && o.push("uppercase letter"), l && o.push("number"), u && o.push("special character (!@#$%^&*)"), `Password must contain ${o.join(", ")}`;
     }
+  },
+  halfwidthKatakana: {
+    validate: (e) => e ? /^[ｦ-ﾟ]+$/.test(e) : !0,
+    message: () => "半角カタカナで入力してください。"
+  },
+  zenkaku: {
+    validate: (e) => e ? /^[^\x01-\x7E\xA1-\xDF]+$/.test(e) : !0,
+    message: () => "全角文字で入力してください。"
   }
-}, E = { ...W };
-function _(e) {
+}, E = { ..._ };
+function Y(e) {
   Object.assign(E, e);
 }
-function w(e, t, r = !1) {
-  var v, u;
+function L(e, t, r = !1) {
+  var x, p, y;
   const a = e.closest("fieldset[data-validation]");
-  let n = !0, s = {};
-  const i = [
+  let n = !0, i = {};
+  const l = [
     { attr: "required", type: "required" },
     { attr: "min", type: "min" },
     { attr: "max", type: "max" },
     { attr: "minlength", type: "minLength" },
     { attr: "maxlength", type: "maxLength" }
-  ];
-  if (e.type === "email") {
-    const o = E.email;
-    o && !o.validate(e.value, e) && (s.email = o.message(e), n = !1);
+  ], u = {
+    email: "email",
+    url: "url",
+    date: "date",
+    time: "time",
+    tel: "phone",
+    number: "numeric"
+  };
+  if (e.type in u) {
+    const s = u[e.type], c = E[s];
+    c && !c.validate(e.value, e) && (i[s] = c.message(e), n = !1);
   }
-  i.forEach((o) => {
+  l.forEach((s) => {
     var c;
-    if (e.hasAttribute(o.attr)) {
-      const m = E[o.type];
-      if (m && !m.validate(e.value, e)) {
-        const y = (c = t == null ? void 0 : t.validationMessages) == null ? void 0 : c[o.type], x = typeof m.message == "function" ? m.message(e) : m.message;
-        s[o.type] = y || x, n = !1;
+    if (e.hasAttribute(s.attr)) {
+      const b = E[s.type];
+      if (b && !b.validate(e.value, e)) {
+        const v = (c = t == null ? void 0 : t.validationMessages) == null ? void 0 : c[s.type], k = typeof b.message == "function" ? b.message(e) : b.message;
+        i[s.type] = v || k, n = !1;
       }
     }
-  }), (a ? ((v = a.getAttribute("data-validation")) == null ? void 0 : v.split(" ")) || [] : ((u = e.getAttribute("data-validation")) == null ? void 0 : u.split(" ")) || []).forEach((o) => {
-    const c = E[o];
-    c && (c.validate(e.value, e, t) || (s[o] = c.message(e, t), n = !1));
+  }), (a ? ((x = a.getAttribute("data-validation")) == null ? void 0 : x.split(" ")) || [] : ((p = e.getAttribute("data-validation")) == null ? void 0 : p.split(" ")) || []).forEach((s) => {
+    const c = E[s];
+    c && (c.validate(e.value, e, t) || (i[s] = c.message(e, t), n = !1));
   });
-  const l = a || e.closest("div");
-  if (l) {
-    const o = l.querySelectorAll('[data-validation="error"]');
-    O(o, s, e, t);
+  const d = a || e.closest("div");
+  if (d) {
+    let s;
+    if (e.type === "radio") {
+      const c = e.closest("div");
+      s = ((y = c == null ? void 0 : c.parentElement) == null ? void 0 : y.querySelectorAll('[data-validation="error"]')) || d.querySelectorAll('[data-validation="error"]');
+    } else
+      s = d.querySelectorAll('[data-validation="error"]');
+    H(s, i, e, t);
   }
-  const g = e.getAttribute("name");
-  if (g) {
-    const o = document.querySelectorAll(`[data-validation="error"][data-validation-for="${g}"]`), c = document.querySelector("[data-validation-error-global]");
-    (r || c != null && c.classList.contains("active")) && O(o, s, e, t);
-    const m = Array.from(o).some(
-      (y) => y.style.display === "block"
+  const h = e.getAttribute("name");
+  if (h) {
+    const s = document.querySelectorAll(`[data-validation="error"][data-validation-for="${h}"]`), c = document.querySelector("[data-validation-error-global]");
+    (r || c != null && c.classList.contains("active")) && H(s, i, e, t);
+    const b = Array.from(s).some(
+      (v) => v.style.display === "block"
     );
-    c == null || c.classList.toggle("active", m);
+    c == null || c.classList.toggle("active", b);
   }
   return n;
 }
-function T(e, t, r, a) {
-  var i, d, l;
+function Z(e, t, r, a) {
+  var l, u, o;
   if (console.log("Debug getErrorMessage:", {
     type: e,
     errorsByType: r,
     hasError: r[e],
     options: a,
     validationMessages: a == null ? void 0 : a.validationMessages,
-    optionMessage: (i = a == null ? void 0 : a.validationMessages) == null ? void 0 : i[e]
+    optionMessage: (l = a == null ? void 0 : a.validationMessages) == null ? void 0 : l[e]
   }), !r[e])
     return "";
-  const n = (d = t.closest("div")) == null ? void 0 : d.querySelector(`[data-validation-type="${e}"]`);
+  const n = (u = t.closest("div")) == null ? void 0 : u.querySelector(`[data-validation-type="${e}"]`);
   if (n != null && n.hasAttribute("data-error-fixed"))
     return console.log("Using fixed message:", n.innerHTML), n.innerHTML;
-  const s = (l = a == null ? void 0 : a.validationMessages) == null ? void 0 : l[e];
-  if (s) {
-    if (console.log("Using option message:", s), typeof s == "function") {
-      const g = s(t);
-      return console.log("Function message result:", g), g;
+  const i = (o = a == null ? void 0 : a.validationMessages) == null ? void 0 : o[e];
+  if (i) {
+    if (console.log("Using option message:", i), typeof i == "function") {
+      const d = i(t);
+      return console.log("Function message result:", d), d;
     }
-    return s;
+    return i;
   }
   return console.log("Using default message:", r[e]), r[e];
 }
-function O(e, t, r, a) {
-  const n = e.length === 1, s = Object.keys(t).length > 0;
+function H(e, t, r, a) {
+  const n = Object.keys(t).length > 0;
   e.forEach((i) => {
-    var u, o;
-    const d = i.getAttribute("data-validation-type"), l = i, g = l.innerHTML.trim(), v = l.hasAttribute("data-error-fixed");
-    if (d) {
-      const c = T(d, r, t, a);
-      if (v) {
-        l.style.display = t[d] ? "block" : "none";
-        return;
-      }
-      ((u = a == null ? void 0 : a.validationMessages) == null ? void 0 : u[d]) ? l.innerHTML = c : g || (l.innerHTML = c), l.style.display = t[d] ? "block" : "none";
-    } else if (n) {
-      const c = Object.keys(t)[0], m = T(c, r, t, a);
-      v || ((o = a == null ? void 0 : a.validationMessages) != null && o[c] || !g) && (l.innerHTML = m), l.style.display = s ? "block" : "none";
+    var p, y;
+    const l = i.getAttribute("data-validation-type"), u = i, o = u.innerHTML.trim(), d = u.hasAttribute("data-error-fixed");
+    if (!l) {
+      if (n) {
+        const s = Object.keys(t)[0], c = Z(s, r, t, a);
+        d || ((p = a == null ? void 0 : a.validationMessages) != null && p[s] || !o) && (u.innerHTML = c), u.style.display = "block";
+      } else
+        u.style.display = "none";
+      return;
     }
+    const h = Z(l, r, t, a);
+    if (d) {
+      u.style.display = t[l] ? "block" : "none";
+      return;
+    }
+    ((y = a == null ? void 0 : a.validationMessages) == null ? void 0 : y[l]) ? u.innerHTML = h : o || (u.innerHTML = h), u.style.display = t[l] ? "block" : "none";
   });
 }
-function $(e, t = {}) {
+function M(e, t = {}) {
   const {
     offset: r = 50,
     behavior: a = "smooth",
     duration: n = "0.5s"
   } = t;
-  document.documentElement.style.setProperty("scroll-behavior", a), document.documentElement.style.setProperty("transition-duration", n), document.documentElement.style.setProperty("scroll-timeline-name", "scroll"), e.style.scrollMargin = `${r}px`, e.scrollIntoView({
+  document.documentElement.style.setProperty("scroll-behavior", a), document.documentElement.style.setProperty("transition-duration", n), e.style.scrollMargin = `${r}px`;
+  const i = window.scrollY, l = e.getBoundingClientRect();
+  if (l.top >= 0 && l.bottom <= window.innerHeight) {
+    e.focus();
+    return;
+  }
+  e.scrollIntoView({
     behavior: a,
     block: "nearest",
-    // 最も近い位置にスクロール
     inline: "nearest"
-  }), setTimeout(() => {
-    document.documentElement.style.removeProperty("scroll-behavior"), document.documentElement.style.removeProperty("transition-duration"), document.documentElement.style.removeProperty("scroll-timeline-name"), setTimeout(() => {
-      e.focus();
-    }, 100);
-  }, parseFloat(n) * 100);
+  });
+  let o = window.scrollY;
+  const d = () => {
+    const h = window.scrollY;
+    if (h === o && h !== i) {
+      document.documentElement.style.removeProperty("scroll-behavior"), document.documentElement.style.removeProperty("transition-duration"), e.focus();
+      return;
+    }
+    o = h, requestAnimationFrame(d);
+  };
+  requestAnimationFrame(d);
 }
-function H(e, t) {
+function T(e, t) {
   const r = e.querySelectorAll("input, textarea, select");
   let a = !0, n = null;
-  return r.forEach((s) => {
-    w(s, t, !0) || (a = !1, n || (n = s));
+  return r.forEach((i) => {
+    L(i, t, !0) || (a = !1, n || (n = i));
   }), !a && n && setTimeout(() => {
-    n && $(n, t.scrollOptions);
+    n && M(n, t.scrollOptions);
   }, 0), a;
 }
-function z(e, t) {
+function J(e, t) {
   const {
-    progressFillSelector: r = "#progress-fill",
-    indicatorSelector: a = ".step-indicator",
-    progressSelector: n = "#step-progress"
+    stepOptions: {
+      useDisplayNone: r = !1,
+      stepActiveClass: a = "active",
+      indicatorActiveClass: n = "active",
+      indicatorSelector: i = ".step-indicator",
+      progressSelector: l = "#step-progress",
+      progressFillSelector: u = "#progress-fill"
+    } = {}
   } = t || {};
-  let s = Array.from(e.querySelectorAll(".step"));
-  const i = e.querySelector(r), d = e.querySelectorAll(a), l = e.querySelector(n), g = e.querySelector("[data-step-current]"), v = e.querySelector("[data-step-total]");
-  let u = 0;
-  const o = () => {
-    const b = (u + 1) / s.length * 100;
-    i && (i.style.width = `${b}%`), l && l.setAttribute("aria-valuenow", String(b)), d.forEach((h, f) => {
-      h.classList.toggle("active", f <= u);
-    }), g && (g.textContent = String(u + 1)), v && (v.textContent = String(s.length));
-  }, c = () => {
-    const h = s[u].querySelectorAll(
+  let o = Array.from(e.querySelectorAll(".step"));
+  o.forEach((m, g) => {
+    g !== 0 && (r && (m.style.display = "none"), m.classList.remove("active"));
+  });
+  const d = document.querySelector(u), h = document.querySelectorAll(i), x = document.querySelector(l), p = document.querySelector("[data-step-current]"), y = document.querySelector("[data-step-total]");
+  let s = 0;
+  const c = () => {
+    const m = (s + 1) / o.length * 100;
+    d && (d.style.width = `${m}%`), x && x.setAttribute("aria-valuenow", String(m)), h.forEach((g, f) => {
+      g.classList.toggle(n, f === s);
+    }), p && (p.textContent = String(s + 1)), y && (y.textContent = String(o.length));
+  }, b = () => {
+    const g = o[s].querySelectorAll(
       'input, textarea, select, [contenteditable="true"], button[role="combobox"], div[role="listbox"], div[role="slider"], div[role="spinbutton"]'
     );
     let f = !0;
-    return h.forEach((p) => {
-      w(p, t) || (f = !1);
+    return g.forEach((A) => {
+      L(A, t) || (f = !1);
     }), f;
-  }, m = (b) => {
-    s.forEach((p, q) => {
-      p.classList.toggle("active", q === b);
-    }), u = b, o();
-    const h = s[u];
-    h.classList.contains("confirmation-step") && y(s[u - 1], h);
-    const f = h.querySelector('[data-action="next"]');
+  }, v = (m) => {
+    o.forEach((A, q) => {
+      r && (A.style.display = q === m ? "block" : "none"), A.classList.toggle(a, q === m);
+    }), s = m, c();
+    const g = o[s];
+    g.classList.contains("confirmation-step") && k(o[s - 1], g);
+    const f = g.querySelector('[data-action="next"]');
     f && (f.style.display = "inline-block");
-  }, y = (b, h) => {
+  }, k = (m, g) => {
     var q;
-    const f = h.querySelectorAll(".confirmation-section"), p = ((q = t == null ? void 0 : t.confirmationOptions) == null ? void 0 : q.delimiter) || ",";
-    f.forEach((M) => {
-      if (!M.getAttribute("data-step")) return;
-      M.querySelectorAll("[data-confirm]").forEach((N) => {
-        var V, F;
-        const S = N.getAttribute("data-confirm");
+    const f = g.querySelectorAll(".confirmation-section"), A = ((q = t == null ? void 0 : t.confirmationOptions) == null ? void 0 : q.delimiter) || ",";
+    f.forEach((F) => {
+      if (!F.getAttribute("data-step")) return;
+      F.querySelectorAll("[data-confirm]").forEach((R) => {
+        var C, I;
+        const S = R.getAttribute("data-confirm");
         if (!S) return;
-        const L = e.querySelector(`[name="${S}"]`);
-        if (!L) return;
-        let A = "";
-        switch (L.type) {
+        const $ = e.querySelector(`[name="${S}"]`);
+        if (!$) return;
+        let w = "";
+        switch ($.type) {
           case "checkbox":
-            const D = e.querySelectorAll(`input[name="${S}"]:checked`);
-            A = Array.from(D).map((R) => {
-              var I, C;
-              return ((C = (I = R.labels) == null ? void 0 : I[0]) == null ? void 0 : C.textContent) || R.value;
-            }).join(p);
+            const W = e.querySelectorAll(`input[name="${S}"]:checked`);
+            w = Array.from(W).map((z) => {
+              var O, U;
+              return ((U = (O = z.labels) == null ? void 0 : O[0]) == null ? void 0 : U.textContent) || z.value;
+            }).join(A);
             break;
           case "radio":
             const P = e.querySelector(`input[name="${S}"]:checked`);
-            A = P ? ((F = (V = P.labels) == null ? void 0 : V[0]) == null ? void 0 : F.textContent) || P.value : "";
+            w = P ? ((I = (C = P.labels) == null ? void 0 : C[0]) == null ? void 0 : I.textContent) || P.value : "";
             break;
           default:
-            A = L.value;
+            w = $.value;
         }
-        N.textContent = A || "未入力";
+        R.textContent = w || "未入力";
       });
     });
-  }, x = () => {
-    if (!c()) {
-      const f = s[u].querySelector("input:invalid, textarea:invalid, select:invalid");
-      f && $(f, t == null ? void 0 : t.scrollOptions);
+  }, V = () => {
+    if (!b()) {
+      const f = o[s].querySelector("input:invalid, textarea:invalid, select:invalid");
+      f && M(f, t == null ? void 0 : t.scrollOptions);
       return;
     }
-    u < s.length - 1 && m(u + 1);
-  }, k = () => {
-    u > 0 && m(u - 1);
-  }, j = (b) => {
-    b > u && !c() || m(b);
+    s < o.length - 1 && v(s + 1);
+  }, N = () => {
+    s > 0 && v(s - 1);
+  }, j = (m) => {
+    m > s && !b() || v(m);
   };
-  return m(u), e.addEventListener("click", (b) => {
-    const h = b.target;
-    if (h.hasAttribute("data-action")) {
-      const f = h.getAttribute("data-action");
-      if (f === "next" || f === "confirm") x();
-      else if (f === "previous") k();
+  return v(s), e.addEventListener("click", (m) => {
+    const g = m.target;
+    if (g.hasAttribute("data-action")) {
+      const f = g.getAttribute("data-action");
+      if (f === "next" || f === "confirm") V();
+      else if (f === "previous") N();
       else if (f === "edit") {
-        const p = parseInt(h.getAttribute("data-target-step") || "1") - 1;
-        m(p);
+        const A = parseInt(g.getAttribute("data-target-step") || "1") - 1;
+        v(A);
       }
     }
-  }), d.forEach((b, h) => {
-    b.addEventListener("click", () => j(h));
+  }), h.forEach((m, g) => {
+    m.addEventListener("click", () => j(g));
   }), {
-    showStep: m,
-    handleNext: x,
-    handlePrevious: k,
-    updateProgressBar: o
+    showStep: v,
+    handleNext: V,
+    handlePrevious: N,
+    updateProgressBar: c
   };
 }
-const J = {
+const K = {
   required: {
     message: "This field is required"
   }
-}, Z = J.required;
-console.log(`Custom rule found: ${Z.message}`);
+}, G = K.required;
+console.log(`Custom rule found: ${G.message}`);
 typeof window < "u" && (window.Webflow = window.Webflow || []);
-const G = (e) => {
+const Q = (e) => {
   if (e.enableWebflow) {
     window.Webflow.push(() => {
-      U(e);
+      D(e);
     });
     return;
   }
-  return U(e);
+  return D(e);
 };
-function U(e) {
+function D(e) {
   const t = document.querySelector(e.formSelector);
   if (!t) {
     console.error("Form not found");
     return;
   }
-  return e.customRules && _(e.customRules), t.querySelectorAll("input, textarea, select").forEach((a) => {
-    a.addEventListener("input", () => w(a, e, !1)), a.addEventListener("blur", () => w(a, e, !1));
+  return e.customRules && Y(e.customRules), t.querySelectorAll("input, textarea, select").forEach((a) => {
+    a.addEventListener("input", () => L(a, e, !1)), a.addEventListener("blur", () => L(a, e, !1));
   }), e.enableWebflow && (t.setAttribute("novalidate", "true"), t.querySelectorAll('[data-validation="error"]').forEach((a) => {
     a.style.display = "none";
   })), t.addEventListener("submit", async (a) => {
     if (e.enableWebflow) {
-      if (!H(t, e)) {
+      if (!T(t, e)) {
         a.preventDefault(), a.stopPropagation();
         return;
       }
       return;
     }
-    if (a.preventDefault(), !H(t, e)) {
-      const i = t.querySelector("input:invalid, textarea:invalid, select:invalid");
-      i && $(i, e.scrollOptions);
+    if (a.preventDefault(), !T(t, e)) {
+      const l = t.querySelector("input:invalid, textarea:invalid, select:invalid");
+      l && M(l, e.scrollOptions);
       return;
     }
-    const s = new FormData(t);
+    const i = new FormData(t);
     try {
-      "onSubmit" in e && await e.onSubmit(s);
-    } catch (i) {
-      console.error("Error:", i);
+      "onSubmit" in e && await e.onSubmit(i);
+    } catch (l) {
+      console.error("Error:", l);
     }
-  }), z(t, e);
+  }), J(t, e);
 }
-typeof window < "u" && (window.Formous = G);
+typeof window < "u" && (window.Formous = Q);
 export {
-  G as Formous
+  Q as Formous
 };
