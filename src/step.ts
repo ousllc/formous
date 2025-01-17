@@ -7,13 +7,13 @@ export function initializeStepForm(
     options?: FormousOptions
 ) {
     const {
-        progressFillSelector = '#progress-fill',
-        indicatorSelector = '.step-indicator',
-        progressSelector = '#step-progress',
         stepOptions: {
             useDisplayNone = false,
             stepActiveClass = 'active',
-            indicatorActiveClass = 'active'
+            indicatorActiveClass = 'active',
+            indicatorSelector = '.step-indicator',
+            progressSelector = '#step-progress',
+            progressFillSelector = '#progress-fill'
         } = {}
     } = options || {};
 

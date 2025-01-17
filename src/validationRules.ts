@@ -12,7 +12,19 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
         // 入力が空でないか確認
         validate: (value, field) => {
             // data-validation="required" または required 属性があれば検証
-            const isRequired = field.hasAttribute('required') || field.getAttribute('data-validation')?.includes('required');
+            const isRequired = field.hasAttribute('required') || 
+                field.getAttribute('data-validation')?.includes('required') ||
+                field.closest('fieldset[data-validation="required"]') !== null;
+            
+            // ラジオボタンの場合は、グループ内のいずれかが選択されているかチェック
+            if (isRequired && field.type === 'radio') {
+                const name = field.getAttribute('name');
+                if (name) {
+                    const checkedRadio = field.closest('form')?.querySelector(`input[name="${name}"]:checked`);
+                    return !!checkedRadio;
+                }
+            }
+            
             return !isRequired || value.trim().length > 0;
         },
         message: () => 'This field is required.',

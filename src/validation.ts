@@ -79,7 +79,15 @@ export function validateField(field: HTMLInputElement, options?: FormousOptions,
     // エラーメッセージの表示
     const container = fieldset || field.closest('div');
     if (container) {
-        const errorElements = container.querySelectorAll('[data-validation="error"]');
+        let errorElements: NodeListOf<Element>;
+        if (field.type === 'radio') {
+            // ラジオボタンの場合は、親または兄弟のエラー要素を探す
+            const parent = field.closest('div');
+            errorElements = parent?.parentElement?.querySelectorAll('[data-validation="error"]') || 
+                container.querySelectorAll('[data-validation="error"]');
+        } else {
+            errorElements = container.querySelectorAll('[data-validation="error"]');
+        }
         updateErrorElements(errorElements, errorsByType as { [key: string]: string }, field, options);
     }
 

@@ -15,19 +15,20 @@
       <a href="../index.html" class="nav-link">← メインページに戻る</a>
     </nav>
 
-    <form id="step-form" novalidate>
-      <!-- Progress Bar -->
-      <div id="progress-container">
-        <div id="progress-bar">
-          <div id="progress-fill"></div>
-        </div>
-        <div id="step-indicators">
-          <span class="step-indicator">1</span>
-          <span class="step-indicator">2</span>
-          <span class="step-indicator">3</span>
-          <span class="step-indicator">4</span>
-        </div>
+    <!-- Progress Bar -->
+    <div id="progress-container">
+      <div id="progress-bar">
+        <div id="progress-fill"></div>
       </div>
+      <div id="step-indicators">
+        <span class="step-indicator-item">1</span>
+        <span class="step-indicator-item">2</span>
+        <span class="step-indicator-item">3</span>
+        <span class="step-indicator-item">4</span>
+      </div>
+    </div>
+
+    <form id="step-form" novalidate>
 
       <!-- Step 1: 基本情報 -->
       <div class="step">
@@ -109,6 +110,24 @@
             2つ以上5つまでの項目を選択してください
           </div>
         </fieldset>
+
+        <!-- 学習方法 -->
+        <div>
+          <label>希望する学習方法：</label>
+          <div class="radio-wrapper">
+            <input type="radio" id="learning-online" name="learning" value="online" required>
+            <label for="learning-online">オンライン学習</label>
+          </div>
+          <div class="radio-wrapper">
+            <input type="radio" id="learning-offline" name="learning" value="offline">
+            <label for="learning-offline">対面学習</label>
+          </div>
+          <div class="radio-wrapper">
+            <input type="radio" id="learning-hybrid" name="learning" value="hybrid">
+            <label for="learning-hybrid">ハイブリッド</label>
+          </div>
+          <div data-validation="error">学習方法を選択してください</div>
+        </div>
 
         <button type="button" data-action="previous">Previous</button>
         <button type="button" data-action="next">Next</button>
@@ -225,6 +244,15 @@
             requireNumber: true,
             requireSymbol: false
           }
+        },
+        // ステップフォームの設定
+        stepOptions: {
+          progressFillSelector: '#progress-fill',  // プログレスバーの要素
+          indicatorSelector: '.step-indicator-item',    // ステップインジケーターの要素
+          progressSelector: '#step-progress',      // プログレス要素
+          stepActiveClass: 'active',              // アクティブなステップのクラス
+          indicatorActiveClass: 'active',         // アクティブなインジケーターのクラス
+          useDisplayNone: true                   // display: noneを使用するか
         },
         customRules: {
           postalCode: {
