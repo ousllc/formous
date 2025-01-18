@@ -57,20 +57,25 @@ const FormousInit = (options: FormousOptions) => {
     // Webflowの場合は初期化後にイベントを設定
     window.Webflow = window.Webflow || [];
     window.Webflow.push(() => {
+      // HTML5のvalidationを無効化（重要）
+      form.setAttribute('novalidate', 'true');
+
       form.addEventListener('submit', async (e) => {
         const isValid = validateForm(form, options);
         if (!isValid) {
+          console.log("バリデーション失敗: フォーム送信を中止");
           e.preventDefault();
           e.stopPropagation();
           return;
         }
 
+        console.log("バリデーション成功");
         if (options?.webflowOptions?.customSubmit) {
           e.preventDefault();
           e.stopPropagation();
           options.webflowOptions.customSubmit(form);
         }
-        // カスタム送信がない場合は、Webflowのデフォルト送信を許可
+        // カスタム送信がない場合は、Webflowのデフォルト送信を許可（何もしない）
       });
     });
   } else {
@@ -83,13 +88,11 @@ const FormousInit = (options: FormousOptions) => {
         return;
       }
 
-      // Webflow以外でもカスタム送信処理を可能に
       if (options?.webflowOptions?.customSubmit) {
         e.preventDefault();
         e.stopPropagation();
         options.webflowOptions.customSubmit(form);
       }
-      // カスタム送信がない場合は通常の送信を許可
     });
   }
 
