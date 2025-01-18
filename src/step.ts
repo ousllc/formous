@@ -134,15 +134,15 @@ export function initializeStepForm(
         }
         
         if (currentStepIndex < steps.length - 1) {
-            const formElement = form.closest('form') || form;
-            smoothScroll(formElement, options?.scrollOptions);
             showStep(currentStepIndex + 1);
+            smoothScroll(form, options?.scrollOptions);
         }
     };
 
     const handlePrevious = () => {
         if (currentStepIndex > 0) {
             showStep(currentStepIndex - 1);
+            smoothScroll(form, options?.scrollOptions);
         }
     };
 

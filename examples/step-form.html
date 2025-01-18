@@ -44,7 +44,7 @@
         <!-- Last Name -->
         <div>
           <label for="lastName">Last Name:</label>
-          <input type="text" id="lastName" name="lastName" minlength="2" maxlength="30" required />
+          <input type="text" id="lastName" data-validation="alphanumeric" name="lastName" minlength="2" maxlength="30" required />
           <div data-validation="error"></div>
           <!-- <div data-validation="error" data-validation-type="minLength">2文字以上で入力してください</div> -->
         </div>
@@ -243,7 +243,8 @@
           email: 'メールアドレスの形式が正しくありません',
           minLength: (field) => `${field.getAttribute('minlength')}文字以上で入力してください`,
           maxLength: (field) => `${field.getAttribute('maxlength')}文字以下で入力してください`,
-          password: '8文字以上で、大文字・小文字・数字・記号(!@#$%^&*)をそれぞれ1文字以上含める必要があります'
+          password: '8文字以上で、大文字・小文字・数字・記号(!@#$%^&*)をそれぞれ1文字以上含める必要があります',
+          alphanumeric: '半角英数字で入力してください'
         },
         validationPatterns: {
           password: {

@@ -40,6 +40,12 @@ const FormousInit = (options: FormousOptions) => {
     return;
   }
 
+  // 初期化時に全てのエラー要素を非表示に
+  const errorElements = form.querySelectorAll('[data-validation="error"]');
+  errorElements.forEach((element) => {
+    (element as HTMLElement).style.display = 'none';
+  });
+
   // 1. カスタムバリデーションの設定
   if (options.customRules) {
     addCustomValidationRules(options.customRules);
