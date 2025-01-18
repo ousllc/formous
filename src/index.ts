@@ -60,7 +60,7 @@ const FormousInit = (options: FormousOptions) => {
       // HTML5のvalidationを無効化（重要）
       form.setAttribute('novalidate', 'true');
 
-      form.addEventListener('submit', async (e) => {
+      form.addEventListener('submit', function(e) {
         const isValid = validateForm(form, options);
         if (!isValid) {
           console.log("バリデーション失敗: フォーム送信を中止");

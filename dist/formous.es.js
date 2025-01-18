@@ -433,7 +433,7 @@ const Y = (e) => {
   return e.customRules && z(e.customRules), t.querySelectorAll("input, textarea, select").forEach((a) => {
     a.addEventListener("input", () => P(a, e, !1)), a.addEventListener("blur", () => P(a, e, !1));
   }), e.enableWebflow ? (window.Webflow = window.Webflow || [], window.Webflow.push(() => {
-    t.setAttribute("novalidate", "true"), t.addEventListener("submit", async (a) => {
+    t.setAttribute("novalidate", "true"), t.addEventListener("submit", function(a) {
       var s;
       if (!T(t, e)) {
         console.log("バリデーション失敗: フォーム送信を中止"), a.preventDefault(), a.stopPropagation();
