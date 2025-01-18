@@ -135,14 +135,24 @@ export function initializeStepForm(
         
         if (currentStepIndex < steps.length - 1) {
             showStep(currentStepIndex + 1);
-            smoothScroll(form, options?.scrollOptions);
+            setTimeout(() => {
+                const stepIndicators = document.querySelector('[data-scroll="top"]');
+                if (stepIndicators) {
+                    smoothScroll(stepIndicators as HTMLElement, options?.scrollOptions);
+                }
+            }, 100);
         }
     };
 
     const handlePrevious = () => {
         if (currentStepIndex > 0) {
             showStep(currentStepIndex - 1);
-            smoothScroll(form, options?.scrollOptions);
+            setTimeout(() => {
+                const stepIndicators = document.querySelector('[data-scroll="top"]');
+                if (stepIndicators) {
+                    smoothScroll(stepIndicators as HTMLElement, options?.scrollOptions);
+                }
+            }, 100);
         }
     };
 
