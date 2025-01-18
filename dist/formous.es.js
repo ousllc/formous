@@ -170,14 +170,15 @@ const j = {
     validate: (e) => e ? /^[^\x01-\x7E\xA1-\xDF]+$/.test(e) : !0,
     message: () => "全角文字で入力してください。"
   }
-}, E = { ...j };
+}, w = { ...j };
 function z(e) {
-  Object.assign(E, e);
+  Object.assign(w, e);
 }
-function k(e, t, r = !1) {
-  var q, p, y;
+function E(e, t, r = !1) {
+  var x, p, y;
   const a = e.closest("fieldset[data-validation]");
   let s = !0, n = {};
+  e.type === "checkbox" && e.hasAttribute("required") && !e.checked && (n.required = w.required.message(e), s = !1);
   const c = [
     { attr: "required", type: "required" },
     { attr: "min", type: "min" },
@@ -193,20 +194,20 @@ function k(e, t, r = !1) {
     number: "numeric"
   };
   if (e.type in u) {
-    const i = u[e.type], o = E[i];
+    const i = u[e.type], o = w[i];
     o && !o.validate(e.value, e) && (n[i] = o.message(e), s = !1);
   }
   c.forEach((i) => {
     var o;
     if (e.hasAttribute(i.attr)) {
-      const v = E[i.type];
-      if (v && !v.validate(e.value, e)) {
-        const S = (o = t == null ? void 0 : t.validationMessages) == null ? void 0 : o[i.type], A = typeof v.message == "function" ? v.message(e) : v.message;
+      const b = w[i.type];
+      if (b && !b.validate(e.value, e)) {
+        const S = (o = t == null ? void 0 : t.validationMessages) == null ? void 0 : o[i.type], A = typeof b.message == "function" ? b.message(e) : b.message;
         n[i.type] = S || A, s = !1;
       }
     }
-  }), (a ? ((q = a.getAttribute("data-validation")) == null ? void 0 : q.split(" ")) || [] : ((p = e.getAttribute("data-validation")) == null ? void 0 : p.split(" ")) || []).forEach((i) => {
-    const o = E[i];
+  }), (a ? ((x = a.getAttribute("data-validation")) == null ? void 0 : x.split(" ")) || [] : ((p = e.getAttribute("data-validation")) == null ? void 0 : p.split(" ")) || []).forEach((i) => {
+    const o = w[i];
     o && (o.validate(e.value, e, t) || (n[i] = o.message(e, t), s = !1));
   });
   const d = a || e.closest("div");
@@ -223,10 +224,10 @@ function k(e, t, r = !1) {
   if (h) {
     const i = document.querySelectorAll(`[data-validation="error"][data-validation-for="${h}"]`), o = document.querySelector("[data-validation-error-global]");
     (r || o != null && o.classList.contains("active")) && H(i, n, e, t);
-    const v = Array.from(i).some(
+    const b = Array.from(i).some(
       (S) => S.style.display === "block"
     );
-    o == null || o.classList.toggle("active", v);
+    o == null || o.classList.toggle("active", b);
   }
   return s;
 }
@@ -315,7 +316,7 @@ function D(e, t) {
   })));
   let a = !0;
   return r.forEach((s) => {
-    const n = k(s, t, !0);
+    const n = E(s, t, !0);
     console.log("フィールドバリデーション結果:", {
       field: s.getAttribute("name"),
       valid: n
@@ -337,58 +338,58 @@ function W(e, t) {
   l.forEach((m, f) => {
     f !== 0 && (r && (m.style.display = "none"), m.classList.remove("active"));
   });
-  const d = document.querySelector(u), h = document.querySelectorAll(n), q = document.querySelector(c), p = document.querySelector("[data-step-current]"), y = document.querySelector("[data-step-total]");
+  const d = document.querySelector(u), h = document.querySelectorAll(n), x = document.querySelector(c), p = document.querySelector("[data-step-current]"), y = document.querySelector("[data-step-total]");
   let i = 0;
   const o = () => {
     const m = (i + 1) / l.length * 100;
-    d && (d.style.width = `${m}%`), q && q.setAttribute("aria-valuenow", String(m)), h.forEach((f, g) => {
+    d && (d.style.width = `${m}%`), x && x.setAttribute("aria-valuenow", String(m)), h.forEach((f, g) => {
       f.classList.toggle(s, g === i);
     }), p && (p.textContent = String(i + 1)), y && (y.textContent = String(l.length));
-  }, v = () => {
+  }, b = () => {
     const f = l[i].querySelectorAll(
       'input, textarea, select, [contenteditable="true"], button[role="combobox"], div[role="listbox"], div[role="slider"], div[role="spinbutton"]'
     );
     let g = !0;
-    return f.forEach((b) => {
-      k(b, t) || (g = !1);
+    return f.forEach((v) => {
+      E(v, t) || (g = !1);
     }), g;
   }, S = () => {
     var g;
     const m = ((g = t == null ? void 0 : t.confirmationOptions) == null ? void 0 : g.delimiter) || ",";
-    e.querySelectorAll("[data-confirm]").forEach((b) => {
+    e.querySelectorAll("[data-confirm]").forEach((v) => {
       var N, F;
-      const x = b.getAttribute("data-confirm");
-      if (!x) return;
-      const P = e.querySelector(`[name="${x}"]`);
+      const q = v.getAttribute("data-confirm");
+      if (!q) return;
+      const P = e.querySelector(`[name="${q}"]`);
       if (!P) return;
-      let w = "";
+      let k = "";
       switch (P.type) {
         case "checkbox":
-          const U = e.querySelectorAll(`input[name="${x}"]:checked`);
-          w = Array.from(U).map((R) => {
+          const U = e.querySelectorAll(`input[name="${q}"]:checked`);
+          k = Array.from(U).map((R) => {
             var O, C;
             return ((C = (O = R.labels) == null ? void 0 : O[0]) == null ? void 0 : C.textContent) || R.value;
           }).join(m);
           break;
         case "radio":
-          const L = e.querySelector(`input[name="${x}"]:checked`);
-          w = L ? ((F = (N = L.labels) == null ? void 0 : N[0]) == null ? void 0 : F.textContent) || L.value : "";
+          const L = e.querySelector(`input[name="${q}"]:checked`);
+          k = L ? ((F = (N = L.labels) == null ? void 0 : N[0]) == null ? void 0 : F.textContent) || L.value : "";
           break;
         default:
-          w = P.value;
+          k = P.value;
       }
-      b.textContent = w || "未入力";
+      v.textContent = k || "未入力";
     });
   }, A = (m) => {
-    l.forEach((b, x) => {
-      b.classList.toggle(a, x === m), r && (b.style.display = x === m ? "block" : "none");
+    l.forEach((v, q) => {
+      v.classList.toggle(a, q === m), r && (v.style.display = q === m ? "block" : "none");
     }), i = m, o();
     const f = l[i];
     S();
     const g = f.querySelector('[data-action="next"]');
     g && (g.style.display = "inline-block");
   }, M = () => {
-    if (!v()) {
+    if (!b()) {
       const g = l[i].querySelector("input:invalid, textarea:invalid, select:invalid");
       g && $(g, t == null ? void 0 : t.scrollOptions);
       return;
@@ -400,9 +401,9 @@ function W(e, t) {
   }, V = () => {
     i > 0 && A(i - 1);
   }, T = (m) => {
-    if (m > i && !v()) {
-      const b = l[i].querySelector("input:invalid, textarea:invalid, select:invalid");
-      b && $(b, t == null ? void 0 : t.scrollOptions);
+    if (m > i && !b()) {
+      const v = l[i].querySelector("input:invalid, textarea:invalid, select:invalid");
+      v && $(v, t == null ? void 0 : t.scrollOptions);
       return;
     }
     A(m);
@@ -414,8 +415,8 @@ function W(e, t) {
       if (g === "next" || g === "confirm") M();
       else if (g === "previous") V();
       else if (g === "edit") {
-        const b = parseInt(f.getAttribute("data-target-step") || "1") - 1;
-        A(b);
+        const v = parseInt(f.getAttribute("data-target-step") || "1") - 1;
+        A(v);
       }
     }
   }), h.forEach((m, f) => {
@@ -441,7 +442,7 @@ const Y = (e) => {
     return;
   }
   return e.customRules && z(e.customRules), t.querySelectorAll("input, textarea, select").forEach((a) => {
-    a.addEventListener("input", () => k(a, e, !1)), a.addEventListener("blur", () => k(a, e, !1));
+    a.addEventListener("input", () => E(a, e, !1)), a.addEventListener("blur", () => E(a, e, !1));
   }), e.enableWebflow ? (window.Webflow = window.Webflow || [], window.Webflow.push(() => {
     t.setAttribute("novalidate", "true"), t.addEventListener("submit", function(a) {
       var n;

@@ -18,6 +18,12 @@ export function validateField(field: HTMLInputElement, options?: FormousOptions,
     let isValid = true;
     let errorsByType: { [key: string]: string | ((field: HTMLInputElement) => string) } = {};
 
+    // チェックボックスのrequired属性チェックを最初に行う
+    if (field.type === 'checkbox' && field.hasAttribute('required') && !field.checked) {
+        errorsByType['required'] = ValidationRules.required.message(field);
+        isValid = false;
+    }
+
     // HTML標準属性のバリデーション
     const standardValidations = [
         { attr: 'required', type: 'required' },
