@@ -271,31 +271,36 @@ export function smoothScroll(element: HTMLElement, options: FormousOptions['scro
  * @returns boolean - バリデーション結果（true: 成功, false: 失敗）
  */
 export function validateForm(form: HTMLFormElement, options: FormousOptions): boolean {
-    const fields = form.querySelectorAll('input, textarea, select');
+    console.log('validateForm開始');
+    
+    const fields = form.querySelectorAll('input:not([type="submit"]), textarea, select');
+    console.log('検証対象フィールド:', Array.from(fields).map(f => ({
+        type: f.getAttribute('type'),
+        name: f.getAttribute('name'),
+        validation: f.getAttribute('data-validation'),
+        required: f.hasAttribute('required'),
+        value: (f as HTMLInputElement).value
+    })));
+
     let isValid = true;
     let firstErrorField: HTMLElement | null = null;
 
-    // 各フィールドのバリデーション
     fields.forEach((field) => {
-        const fieldValid = validateField(field as HTMLInputElement, options, true);  // フォーム送信時はグローバルエラーを表示
+        const fieldValid = validateField(field as HTMLInputElement, options, true);
+        console.log('フィールドバリデーション結果:', {
+            field: field.getAttribute('name'),
+            valid: fieldValid
+        });
+
         if (!fieldValid) {
             isValid = false;
-            // 最初のエラーフィールドを記録（スクロール用）
             if (!firstErrorField) {
                 firstErrorField = field as HTMLElement;
             }
         }
     });
 
-    // エラーがある場合、最初のエラーフィールドまでスクロール
-    if (!isValid && firstErrorField) {
-        setTimeout(() => {
-            if (firstErrorField) {
-                smoothScroll(firstErrorField, options.scrollOptions);
-            }
-        }, 0);
-    }
-
+    console.log('最終バリデーション結果:', isValid);
     return isValid;
 }
 

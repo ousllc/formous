@@ -68,7 +68,6 @@ const FormousInit = (options: FormousOptions) => {
           e.stopPropagation();
           return;
         }
-
         console.log("バリデーション成功");
         if (options?.webflowOptions?.customSubmit) {
           e.preventDefault();
