@@ -69,12 +69,10 @@ const FormousInit = (options: FormousOptions) => {
       form.addEventListener('submit', function(e) {
         const isValid = validateForm(form, options);
         if (!isValid) {
-          console.log("バリデーション失敗: フォーム送信を中止");
           e.preventDefault();
           e.stopPropagation();
           return;
         }
-        console.log("バリデーション成功");
         if (options?.webflowOptions?.customSubmit) {
           e.preventDefault();
           e.stopPropagation();

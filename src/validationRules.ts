@@ -117,9 +117,45 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
         message: () => 'Please enter a valid phone number.',
     },
     postalCode: {
-        // 郵便番号形式か確認（日本の形式）
-        validate: (value) => /^[0-9]{3}-?[0-9]{4}$/.test(value),
-        message: () => 'Please enter a valid postal code.',
+        validate: (value, field) => {
+            const country = field.getAttribute('data-country') || 'JP';
+            const patterns = {
+                JP: /^[0-9]{3}-[0-9]{4}$/,  // ハイフンを必須に変更（123-4567のみ許可）
+                US: /^\d{5}(-\d{4})?$/,
+                UK: /^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$/i,
+                CA: /^[ABCEGHJKLMNPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ ]?\d[ABCEGHJ-NPRSTV-Z]\d$/i,
+                DE: /^\d{5}$/,
+                FR: /^\d{5}$/,
+                AU: /^\d{4}$/,
+                IT: /^\d{5}$/,
+                ES: /^\d{5}$/,
+                NL: /^\d{4}[ ]?[A-Z]{2}$/,
+                CN: /^\d{6}$/
+            };
+            
+            const pattern = patterns[country as keyof typeof patterns];
+            if (!pattern) return true;
+            
+            return !value || pattern.test(value);
+        },
+        message: (field) => {
+            const country = field.getAttribute('data-country') || 'JP';
+            const messages = {
+                JP: '郵便番号は123-4567の形式（ハイフン必須）で入力してください',
+                US: 'Please enter a ZIP code in the format 12345 or 12345-6789',
+                UK: 'Please enter a valid postcode (e.g., AA9A 9AA)',
+                CA: 'Please enter a valid postal code (e.g., A1A 1A1)',
+                DE: 'Bitte geben Sie eine gültige Postleitzahl ein (z.B. 12345)',
+                FR: 'Veuillez entrer un code postal valide (ex: 12345)',
+                AU: 'Please enter a valid postcode (e.g., 1234)',
+                IT: 'Inserisci un codice postale valido (es. 12345)',
+                ES: 'Por favor, introduzca un código postal válido (ej. 12345)',
+                NL: 'Voer een geldige postcode in (bijv. 1234 AB)',
+                CN: '请输入有效的邮政编码（例：123456）'
+            };
+            
+            return messages[country as keyof typeof messages] || '正しい郵便番号形式で入力してください';
+        }
     },
     equals: {
         // 他のフィールドの値と一致するか確認

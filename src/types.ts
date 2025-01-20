@@ -8,7 +8,6 @@ export interface FormousOptions {
     
     enableWebflow?: boolean;
     webflowOptions?: {
-        preventSubmit?: boolean;
         customSubmit?: (form: HTMLFormElement) => void;
     };
     

@@ -6,7 +6,6 @@ export interface FormousOptions {
     formSelector: string;
     enableWebflow?: boolean;
     webflowOptions?: {
-        preventSubmit?: boolean;
         customSubmit?: (form: HTMLFormElement) => void;
     };
     validationMessages?: {

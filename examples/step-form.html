@@ -163,8 +163,8 @@
         <!-- 郵便番号 -->
         <div>
           <label for="postalCode">郵便番号:</label>
-          <input type="text" id="postalCode" name="postalCode" data-validation="postalCode" required />
-          <div data-validation="error" data-validation-type="postalCode">有効な郵便番号を入力してください</div>
+          <input type="text" id="postalCode" name="postalCode" data-validation="postalCode" data-country="JP" required />
+          <div data-validation="error">有効な郵便番号を入力してください</div>
         </div>
 
         <!-- 生年月日 -->
@@ -263,12 +263,6 @@
           stepActiveClass: 'active',              // アクティブなステップのクラス
           indicatorActiveClass: 'active',         // アクティブなインジケーターのクラス
           useDisplayNone: true                   // display: noneを使用するか
-        },
-        customRules: {
-          postalCode: {
-            validate: (value) => /^\d{3}-?\d{4}$/.test(value),
-            message: () => '正しい郵便番号の形式で入力してください'
-          }
         }
       });
     });

@@ -119,14 +119,6 @@ export function validateField(field: HTMLInputElement, options?: FormousOptions,
 }
 
 function getErrorMessage(type: string, field: HTMLInputElement, errorsByType: { [key: string]: string }, options?: FormousOptions): string {
-    console.log('Debug getErrorMessage:', {
-        type,
-        errorsByType,
-        hasError: errorsByType[type],
-        options,
-        validationMessages: options?.validationMessages,
-        optionMessage: options?.validationMessages?.[type]
-    });
 
     // エラーが発生している場合のみメッセージを表示
     if (!errorsByType[type]) {
@@ -136,24 +128,20 @@ function getErrorMessage(type: string, field: HTMLInputElement, errorsByType: { 
     // 優先順位3: data-error-fixed属性がある場合（最優先）
     const errorElement = field.closest('div')?.querySelector(`[data-validation-type="${type}"]`);
     if (errorElement?.hasAttribute('data-error-fixed')) {
-        console.log('Using fixed message:', errorElement.innerHTML);
         return errorElement.innerHTML;
     }
 
     // 優先順位2: オプションで指定されたメッセージ
     const optionMessage = options?.validationMessages?.[type];
     if (optionMessage) {
-        console.log('Using option message:', optionMessage);
         if (typeof optionMessage === 'function') {
             const message = (optionMessage as (field: HTMLInputElement) => string)(field);
-            console.log('Function message result:', message);
             return message;
         }
         return optionMessage as string;
     }
 
     // 優先順位1: ValidationRulesのメッセージ（最後）
-    console.log('Using default message:', errorsByType[type]);
     return errorsByType[type];
 }
 
@@ -277,26 +265,14 @@ export function smoothScroll(element: HTMLElement, options: FormousOptions['scro
  * @returns boolean - バリデーション結果（true: 成功, false: 失敗）
  */
 export function validateForm(form: HTMLFormElement, options: FormousOptions): boolean {
-    console.log('validateForm開始');
     
     const fields = form.querySelectorAll('input:not([type="submit"]), textarea, select');
-    console.log('検証対象フィールド:', Array.from(fields).map(f => ({
-        type: f.getAttribute('type'),
-        name: f.getAttribute('name'),
-        validation: f.getAttribute('data-validation'),
-        required: f.hasAttribute('required'),
-        value: (f as HTMLInputElement).value
-    })));
 
     let isValid = true;
     let firstErrorField: HTMLElement | null = null;
 
     fields.forEach((field) => {
         const fieldValid = validateField(field as HTMLInputElement, options, true);
-        console.log('フィールドバリデーション結果:', {
-            field: field.getAttribute('name'),
-            valid: fieldValid
-        });
 
         if (!fieldValid) {
             isValid = false;
@@ -306,19 +282,16 @@ export function validateForm(form: HTMLFormElement, options: FormousOptions): bo
         }
     });
 
-    console.log('最終バリデーション結果:', isValid);
     return isValid;
 }
 
 export function Formous(options: FormousOptions) {
-    console.log('1. Formous initialization started');  // ステップ1: 初期化開始
 
     const form = document.querySelector(options.formSelector) as HTMLFormElement;
     if (!form) {
         console.error('Form not found');
         return;
     }
-    console.log('2. Form found:', form);  // ステップ2: フォーム発見
 
     // ステップ3: クリックイベントの設定
     form.addEventListener('click', (event) => {
@@ -326,10 +299,6 @@ export function Formous(options: FormousOptions) {
         
         // ボタンクリックの確認
         if (target.hasAttribute('data-action')) {
-            console.log('3. Action button clicked:', {
-                action: target.getAttribute('data-action'),
-                element: target
-            });
             
             event.preventDefault();
             const action = target.getAttribute('data-action');
@@ -340,16 +309,13 @@ export function Formous(options: FormousOptions) {
                 console.error('Current step not found');
                 return;
             }
-            console.log('4. Current step:', currentStep);
 
             // すべてのステップを取得
             const steps = Array.from(form.querySelectorAll('.step'));
             const currentIndex = steps.indexOf(currentStep);
-            console.log('5. Current index:', currentIndex);
 
             // アクションの処理
             if (action === 'next') {
-                console.log('6. Processing next/confirm action');
                 if (currentIndex < steps.length - 1) {
                     // 現在のステップを非表示
                     currentStep.classList.remove('active');
@@ -360,11 +326,9 @@ export function Formous(options: FormousOptions) {
                     nextStep.classList.add('active');
                     (nextStep as HTMLElement).style.display = 'block';
                     
-                    console.log('7. Moved to next step:', nextStep);
                 }
             }
         }
     });
 
-    console.log('8. Event listener setup completed');
 }
