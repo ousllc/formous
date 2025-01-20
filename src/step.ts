@@ -111,15 +111,7 @@ export function initializeStepForm(
         });
         currentStepIndex = index;
         updateProgressBar();
-
-        const currentStep = steps[currentStepIndex];
-        
         updateConfirmationPage();
-
-        const nextButton = currentStep.querySelector('[data-action="next"]');
-        if (nextButton) {
-            (nextButton as HTMLElement).style.display = 'inline-block';
-        }
     };
 
     const handleNext = () => {
@@ -156,15 +148,39 @@ export function initializeStepForm(
         }
     };
 
-    const handleIndicatorClick = (index: number) => {
-        if (index > currentStepIndex) {
-            const isValid = validateCurrentStep();
-            if (!isValid) {
-                const currentStep = steps[currentStepIndex];
-                const firstErrorField = currentStep.querySelector('input:invalid, textarea:invalid, select:invalid') as HTMLElement;
+    const validateStepsUntil = (targetIndex: number): boolean => {
+        // 現在のステップから目標のステップまでを順にバリデーション
+        for (let i = currentStepIndex; i < targetIndex; i++) {
+            const stepToValidate = steps[i];
+            const fields = stepToValidate.querySelectorAll(
+                'input, textarea, select, [contenteditable="true"]'
+            );
+
+            let isStepValid = true;
+            fields.forEach((field) => {
+                if (!validateField(field as HTMLInputElement, options)) {
+                    isStepValid = false;
+                }
+            });
+
+            if (!isStepValid) {
+                // 最初のエラーがあるステップで停止
+                showStep(i);
+                const firstErrorField = stepToValidate.querySelector('input:invalid, textarea:invalid, select:invalid') as HTMLElement;
                 if (firstErrorField) {
                     smoothScroll(firstErrorField, options?.scrollOptions);
                 }
+                return false;
+            }
+        }
+        return true;
+    };
+
+    const handleIndicatorClick = (index: number) => {
+        if (index > currentStepIndex) {
+            // 途中のステップも含めて全てバリデーション
+            const isValid = validateStepsUntil(index);
+            if (!isValid) {
                 return;
             }
         }
