@@ -22,5 +22,5 @@ export declare function smoothScroll(element: HTMLElement, options?: FormousOpti
  * @param options - バリデーションのオプション設定
  * @returns boolean - バリデーション結果（true: 成功, false: 失敗）
  */
-export declare function validateForm(form: HTMLFormElement, options: FormousOptions): boolean;
+export declare function validateForm(form: HTMLFormElement, options?: FormousOptions): boolean;
 export declare function Formous(options: FormousOptions): void;

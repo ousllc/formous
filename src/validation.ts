@@ -264,21 +264,17 @@ export function smoothScroll(element: HTMLElement, options: FormousOptions['scro
  * @param options - バリデーションのオプション設定
  * @returns boolean - バリデーション結果（true: 成功, false: 失敗）
  */
-export function validateForm(form: HTMLFormElement, options: FormousOptions): boolean {
-    
-    const fields = form.querySelectorAll('input:not([type="submit"]), textarea, select');
-
+export function validateForm(form: HTMLFormElement, options?: FormousOptions): boolean {
+    const fields = form.querySelectorAll('input, textarea, select');
     let isValid = true;
-    let firstErrorField: HTMLElement | null = null;
 
     fields.forEach((field) => {
-        const fieldValid = validateField(field as HTMLInputElement, options, true);
-
-        if (!fieldValid) {
-            isValid = false;
-            if (!firstErrorField) {
-                firstErrorField = field as HTMLElement;
+        if (!validateField(field as HTMLInputElement, options)) {
+            if (isValid) {  // 最初のエラーフィールドの場合のみスクロール
+                const errorField = field as HTMLElement;
+                smoothScroll(errorField, options?.scrollOptions);
             }
+            isValid = false;
         }
     });
 
