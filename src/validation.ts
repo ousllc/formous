@@ -43,31 +43,35 @@ export function validateField(field: HTMLInputElement, options?: FormousOptions,
         'number': 'numeric'
     };
 
-    // type属性のバリデーション
-    if (field.type in typeValidations) {
-        const validationType = typeValidations[field.type as keyof typeof typeValidations];
-        const rule = ValidationRules[validationType];
-        if (rule && !rule.validate(field.value, field)) {
-            errorsByType[validationType] = rule.message(field);
-            isValid = false;
-        }
-    }
-
     standardValidations.forEach(validation => {
         if (field.hasAttribute(validation.attr)) {
             const rule = ValidationRules[validation.type];
             if (rule && !rule.validate(field.value, field)) {
-                // ここでオプションのメッセージを使用
                 const optionMessage = options?.validationMessages?.[validation.type];
-                const message = typeof rule.message === 'function' ? rule.message(field) : rule.message;
-                errorsByType[validation.type] = optionMessage || message;
+                if (optionMessage) {
+                    errorsByType[validation.type] = optionMessage;
+                }
                 isValid = false;
             }
         }
     });
 
+
+    // type属性のバリデーション
+    if (field.type in typeValidations) {
+        const validationType = typeValidations[field.type as keyof typeof typeValidations];
+        const rule = ValidationRules[validationType];
+        if (rule && !rule.validate(field.value, field)) {
+            const optionMessage = options?.validationMessages?.[validationType];
+            if (optionMessage) {
+                errorsByType[validationType] = optionMessage;
+            }
+            isValid = false;
+        }
+    }
+
     // data-validationによるバリデーション
-    const validationTypes = fieldset 
+    const validationTypes = fieldset
         ? fieldset.getAttribute('data-validation')?.split(' ') || []
         : field.getAttribute('data-validation')?.split(' ') || [];
 
@@ -76,7 +80,12 @@ export function validateField(field: HTMLInputElement, options?: FormousOptions,
         if (rule) {
             const result = rule.validate(field.value, field, options);
             if (!result) {
-                errorsByType[type] = rule.message(field, options);
+                const optionMessage = options?.validationMessages?.[type];
+                if (optionMessage) {
+                    errorsByType[type] = optionMessage;
+                } else {
+                    errorsByType[type] = rule.message(field, options);
+                }
                 isValid = false;
             }
         }
@@ -89,7 +98,7 @@ export function validateField(field: HTMLInputElement, options?: FormousOptions,
         if (field.type === 'radio') {
             // ラジオボタンの場合は、親または兄弟のエラー要素を探す
             const parent = field.closest('div');
-            errorElements = parent?.parentElement?.querySelectorAll('[data-validation="error"]') || 
+            errorElements = parent?.parentElement?.querySelectorAll('[data-validation="error"]') ||
                 container.querySelectorAll('[data-validation="error"]');
         } else {
             errorElements = container.querySelectorAll('[data-validation="error"]');
@@ -102,7 +111,7 @@ export function validateField(field: HTMLInputElement, options?: FormousOptions,
     if (fieldName) {
         const remoteErrorElements = document.querySelectorAll(`[data-validation="error"][data-validation-for="${fieldName}"]`);
         const globalErrorContainer = document.querySelector('[data-validation-error-global]');
-        
+
         // グローバルエラーの表示制御
         if (showGlobalErrors || globalErrorContainer?.classList.contains('active')) {
             updateErrorElements(remoteErrorElements, errorsByType as { [key: string]: string }, field, options);
@@ -125,7 +134,7 @@ function getErrorMessage(type: string, field: HTMLInputElement, errorsByType: { 
         return '';
     }
 
-    // 優先順位3: data-error-fixed属性がある場合（最優先）
+    // 優先順位1: data-error-fixed属性がある場合（最優先）
     const errorElement = field.closest('div')?.querySelector(`[data-validation-type="${type}"]`);
     if (errorElement?.hasAttribute('data-error-fixed')) {
         return errorElement.innerHTML;
@@ -141,14 +150,13 @@ function getErrorMessage(type: string, field: HTMLInputElement, errorsByType: { 
         return optionMessage as string;
     }
 
-    // 優先順位1: ValidationRulesのメッセージ（最後）
+    // 優先順位3: ValidationRulesのメッセージ（最後）
     return errorsByType[type];
 }
 
 // エラー要素の更新を行うヘルパー関数
 function updateErrorElements(elements: NodeListOf<Element>, errorsByType: { [key: string]: string }, field: HTMLInputElement, options?: FormousOptions) {
     const hasErrors = Object.keys(errorsByType).length > 0;
-
     elements.forEach(errorElement => {
         const targetType = errorElement.getAttribute('data-validation-type');
         const element = errorElement as HTMLElement;
@@ -161,12 +169,8 @@ function updateErrorElements(elements: NodeListOf<Element>, errorsByType: { [key
                 // エラーが1つ以上ある場合
                 const firstErrorType = Object.keys(errorsByType)[0];
                 const message = getErrorMessage(firstErrorType, field, errorsByType, options);
-                
                 if (!isFixed) {
-                    const optionMessage = options?.validationMessages?.[firstErrorType];
-                    if (optionMessage || !hasInnerText) {
-                        element.innerHTML = message;
-                    }
+                    element.innerHTML = message;
                 }
                 element.style.display = 'block';
             } else {
@@ -183,10 +187,7 @@ function updateErrorElements(elements: NodeListOf<Element>, errorsByType: { [key
         }
 
         const optionMessage = options?.validationMessages?.[targetType];
-        if (optionMessage) {
-            element.innerHTML = message;
-        } else if (hasInnerText) {
-        } else {
+        if (optionMessage || !hasInnerText) {
             element.innerHTML = message;
         }
         element.style.display = errorsByType[targetType] ? 'block' : 'none';
@@ -292,13 +293,13 @@ export function Formous(options: FormousOptions) {
     // ステップ3: クリックイベントの設定
     form.addEventListener('click', (event) => {
         const target = event.target as HTMLElement;
-        
+
         // ボタンクリックの確認
         if (target.hasAttribute('data-action')) {
-            
+
             event.preventDefault();
             const action = target.getAttribute('data-action');
-            
+
             // 現在のステップを取得
             const currentStep = target.closest('.step');
             if (!currentStep) {
@@ -316,12 +317,12 @@ export function Formous(options: FormousOptions) {
                     // 現在のステップを非表示
                     currentStep.classList.remove('active');
                     (currentStep as HTMLElement).style.display = 'none';
-                    
+
                     // 次のステップを表示
                     const nextStep = steps[currentIndex + 1];
                     nextStep.classList.add('active');
                     (nextStep as HTMLElement).style.display = 'block';
-                    
+
                 }
             }
         }

@@ -27,7 +27,11 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
             
             return !isRequired || value.trim().length > 0;
         },
-        message: () => 'This field is required.',
+        message: (field) => {
+            // カスタムメッセージがある場合はそれを使用し、
+            // ない場合はデフォルトメッセージを使用するはず...
+            return field.getAttribute('data-validation-message') || 'このフィールドは必須です';
+        },
     },
     email: {
         // メールアドレス形式か確認

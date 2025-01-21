@@ -62,7 +62,7 @@
           <label for="confirmEmail">Confirm Email:</label>
           <input type="email" id="confirmEmail" name="confirmEmail" data-validation="equals" data-equals="email"
             required />
-          <div data-validation="error" data-validation-type="equals">メールアドレスが一致しません</div>
+          <div data-validation="error"></div>
         </div>
 
         <!-- Password -->
@@ -240,7 +240,7 @@
         },
         validationMessages: {
           required: '必須項目です！',
-          email: 'メールアドレスの形式が正しくありません',
+          email: 'メールアドレスの形式が正しくありません！',
           minLength: (field) => `${field.getAttribute('minlength')}文字以上で入力してください`,
           maxLength: (field) => `${field.getAttribute('maxlength')}文字以下で入力してください`,
           password: '8文字以上で、大文字・小文字・数字・記号(!@#$%^&*)をそれぞれ1文字以上含める必要があります',
