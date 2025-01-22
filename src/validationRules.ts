@@ -212,7 +212,7 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
     },
     'checkbox-group': {
         validate: (_, field) => {
-            const group = field.closest('fieldset[data-validation="checkbox-group"]');
+            const group = field.closest('[data-validation="checkbox-group"]');
             if (!group) return true; // グループがない場合は無効としない
     
             const checkboxes = group.querySelectorAll('input[type="checkbox"]');
@@ -229,7 +229,7 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
             return checkedCount >= min && checkedCount <= max;
         },
         message: (field) => {
-            const group = field.closest('fieldset[data-validation="checkbox-group"]');
+            const group = field.closest('[data-validation="checkbox-group"]');
             const min = group?.getAttribute('data-group-min') || '0';
             const max = group?.getAttribute('data-group-max') || '∞';
     
