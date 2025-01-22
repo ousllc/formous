@@ -1,12 +1,13 @@
 import { ValidationRule } from './validationRules';
 import { FormousOptions } from './types';
+type FormElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 export declare const ValidationRules: {
     [key: string]: ValidationRule;
 };
 export declare function addCustomValidationRules(customRules: {
     [key: string]: ValidationRule;
 }): void;
-export declare function validateField(field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement, options?: FormousOptions, showGlobalErrors?: boolean): boolean;
+export declare function validateField(field: FormElement, options?: FormousOptions, showGlobalErrors?: boolean): boolean;
 /**
  * スムーズスクロール機能を提供する関数
  * @param element - スクロール対象のHTML要素
@@ -24,3 +25,4 @@ export declare function smoothScroll(element: HTMLElement, options?: FormousOpti
  */
 export declare function validateForm(form: HTMLFormElement, options?: FormousOptions): boolean;
 export declare function Formous(options: FormousOptions): void;
+export {};

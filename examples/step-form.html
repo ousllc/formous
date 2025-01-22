@@ -99,8 +99,8 @@
         <p>First Name: <span data-confirm="firstName"></span></p>
 
         <!-- 開発分野 -->
-        <fieldset data-validation="checkbox-group" data-group-min="2" data-group-max="5">
-          <legend>興味のある開発分野（2つ以上5つまで選択）：</legend>
+        <div data-validation="checkbox-group" data-group-min="2">
+          <h4>興味のある開発分野（2つ以上5つまで選択）：</h4>
           <div class="checkbox-wrapper">
             <input type="checkbox" id="dev-frontend" name="development" value="frontend">
             <label for="dev-frontend">フロントエンド</label>
@@ -125,10 +125,9 @@
             <input type="checkbox" id="dev-security" name="development" value="security">
             <label for="dev-security">セキュリティ</label>
           </div>
-          <div data-validation="error" data-validation-type="checkbox-group">
-            2つ以上5つまでの項目を選択してください
+          <div data-validation="error">
           </div>
-        </fieldset>
+        </div>
 
         <!-- 学習方法 -->
         <div>

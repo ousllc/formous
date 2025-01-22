@@ -3,6 +3,9 @@ import { defaultValidationRules, ValidationRule } from './validationRules';
 // FormousOptionsをインポートする
 import { FormousOptions } from './types';
 
+// フォーム要素の型を定義
+type FormElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
 // デフォルトのバリデーションルールを複製して、必要に応じてカスタムルールを追加
 export const ValidationRules: { [key: string]: ValidationRule } = { ...defaultValidationRules };
 
@@ -13,10 +16,9 @@ export function addCustomValidationRules(customRules: { [key: string]: Validatio
 }
 
 // 単一のフィールドをバリデートする関数
-export function validateField(field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement, options?: FormousOptions, showGlobalErrors: boolean = false): boolean {
-    const fieldset = field.closest('fieldset[data-validation]');
+export function validateField(field: FormElement, options?: FormousOptions, showGlobalErrors: boolean = false): boolean {
     let isValid = true;
-    let errorsByType: { [key: string]: string | ((field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => string) } = {};
+    let errorsByType: { [key: string]: string | ((field: FormElement) => string) } = {};
 
     // HTML標準属性のバリデーション
     const standardValidations = [
@@ -76,20 +78,21 @@ export function validateField(field: HTMLInputElement | HTMLSelectElement | HTML
     }
 
     // data-validationによるバリデーション
-    const validationTypes = fieldset
-        ? fieldset.getAttribute('data-validation')?.split(' ') || []
-        : field.getAttribute('data-validation')?.split(' ') || [];
+    const validationTypes = [
+        ...(field.getAttribute('data-validation')?.split(' ') || []),
+        ...(field.closest('[data-validation="checkbox-group"]') ? ['checkbox-group'] : [])
+    ];
 
     validationTypes.forEach(type => {
         const rule = ValidationRules[type];
         if (rule) {
-            const result = rule.validate(field.value, field as HTMLInputElement, options);
+            const result = rule.validate(field.value, field, options);
             if (!result) {
                 const optionMessage = options?.validationMessages?.[type];
                 if (optionMessage) {
                     errorsByType[type] = optionMessage as string;
                 } else {
-                    errorsByType[type] = rule.message(field as HTMLInputElement, options);
+                    errorsByType[type] = rule.message(field, options);
                 }
                 isValid = false;
             }
@@ -97,18 +100,21 @@ export function validateField(field: HTMLInputElement | HTMLSelectElement | HTML
     });
 
     // エラーメッセージの表示
-    const container = fieldset || field.closest('div');
-    if (container) {
+    const container = field.closest('div');
+    const groupContainer = field.closest('[data-validation="checkbox-group"]');
+    const errorContainer = groupContainer || container;
+
+    if (errorContainer) {
         let errorElements: NodeListOf<Element>;
         if (field.type === 'radio') {
             // ラジオボタンの場合は、親または兄弟のエラー要素を探す
             const parent = field.closest('div');
             errorElements = parent?.parentElement?.querySelectorAll('[data-validation="error"]') ||
-                container.querySelectorAll('[data-validation="error"]');
+                errorContainer.querySelectorAll('[data-validation="error"]');
         } else {
-            errorElements = container.querySelectorAll('[data-validation="error"]');
+            errorElements = errorContainer.querySelectorAll('[data-validation="error"]');
         }
-        updateErrorElements(errorElements, errorsByType as { [key: string]: string }, field as HTMLInputElement, options);
+        updateErrorElements(errorElements, errorsByType as { [key: string]: string }, field, options);
     }
 
     // data-validation-for属性を持つ離れた場所のエラー要素を探して更新
@@ -119,7 +125,7 @@ export function validateField(field: HTMLInputElement | HTMLSelectElement | HTML
 
         // グローバルエラーの表示制御
         if (showGlobalErrors || globalErrorContainer?.classList.contains('active')) {
-            updateErrorElements(remoteErrorElements, errorsByType as { [key: string]: string }, field as HTMLInputElement, options);
+            updateErrorElements(remoteErrorElements, errorsByType as { [key: string]: string }, field, options);
         }
 
         // グローバルエラーコンテナの表示制御
@@ -132,8 +138,12 @@ export function validateField(field: HTMLInputElement | HTMLSelectElement | HTML
     return isValid;
 }
 
-function getErrorMessage(type: string, field: HTMLInputElement, errorsByType: { [key: string]: string }, options?: FormousOptions): string {
-
+function getErrorMessage(
+    type: string,
+    field: FormElement,
+    errorsByType: { [key: string]: string }, 
+    options?: FormousOptions
+): string {
     // エラーが発生している場合のみメッセージを表示
     if (!errorsByType[type]) {
         return '';
@@ -149,7 +159,7 @@ function getErrorMessage(type: string, field: HTMLInputElement, errorsByType: { 
     const optionMessage = options?.validationMessages?.[type];
     if (optionMessage) {
         if (typeof optionMessage === 'function') {
-            const message = (optionMessage as (field: HTMLInputElement) => string)(field);
+            const message = (optionMessage as (field: FormElement) => string)(field);
             return message;
         }
         return optionMessage as string;
@@ -160,7 +170,12 @@ function getErrorMessage(type: string, field: HTMLInputElement, errorsByType: { 
 }
 
 // エラー要素の更新を行うヘルパー関数
-function updateErrorElements(elements: NodeListOf<Element>, errorsByType: { [key: string]: string }, field: HTMLInputElement, options?: FormousOptions) {
+function updateErrorElements(
+    elements: NodeListOf<Element>, 
+    errorsByType: { [key: string]: string }, 
+    field: FormElement, 
+    options?: FormousOptions
+) {
     const hasErrors = Object.keys(errorsByType).length > 0;
     elements.forEach(errorElement => {
         const targetType = errorElement.getAttribute('data-validation-type');
@@ -275,7 +290,7 @@ export function validateForm(form: HTMLFormElement, options?: FormousOptions): b
     let isValid = true;
 
     fields.forEach((field) => {
-        if (!validateField(field as HTMLInputElement, options)) {
+        if (!validateField(field as FormElement, options)) {
             if (isValid) {  // 最初のエラーフィールドの場合のみスクロール
                 const errorField = field as HTMLElement;
                 smoothScroll(errorField, options?.scrollOptions);
