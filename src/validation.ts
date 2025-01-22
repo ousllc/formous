@@ -106,33 +106,24 @@ export function validateField(field: FormElement, options?: FormousOptions, show
 
     if (errorContainer) {
         let errorElements: NodeListOf<Element>;
-        if (field.type === 'radio') {
-            // ラジオボタンの場合は、親または兄弟のエラー要素を探す
-            const parent = field.closest('div');
-            errorElements = parent?.parentElement?.querySelectorAll('[data-validation="error"]') ||
-                errorContainer.querySelectorAll('[data-validation="error"]');
+        if (field.type === 'radio' || groupContainer) {
+            // ラジオボタンとチェックボックスグループの場合は、次の要素のエラーを探す
+            const nextError = errorContainer.nextElementSibling || 
+                errorContainer.closest('.form-section')?.nextElementSibling;
+            errorElements = nextError?.matches('[data-validation="error"]')
+                ? new Set([nextError]) as any
+                : errorContainer.querySelectorAll('[data-validation="error"]');
         } else {
             errorElements = errorContainer.querySelectorAll('[data-validation="error"]');
         }
         updateErrorElements(errorElements, errorsByType as { [key: string]: string }, field, options);
     }
 
-    // data-validation-for属性を持つ離れた場所のエラー要素を探して更新
+    // グローバルエラーメッセージの更新
     const fieldName = field.getAttribute('name');
-    if (fieldName) {
-        const remoteErrorElements = document.querySelectorAll(`[data-validation="error"][data-validation-for="${fieldName}"]`);
-        const globalErrorContainer = document.querySelector('[data-validation-error-global]');
-
-        // グローバルエラーの表示制御
-        if (showGlobalErrors || globalErrorContainer?.classList.contains('active')) {
-            updateErrorElements(remoteErrorElements, errorsByType as { [key: string]: string }, field, options);
-        }
-
-        // グローバルエラーコンテナの表示制御
-        const hasVisibleErrors = Array.from(remoteErrorElements).some(
-            el => (el as HTMLElement).style.display === 'block'
-        );
-        globalErrorContainer?.classList.toggle('active', hasVisibleErrors);
+    if (fieldName && showGlobalErrors) {
+        const globalErrorElements = document.querySelectorAll(`[data-validation="error"][data-validation-for="${fieldName}"]`);
+        updateErrorElements(globalErrorElements, errorsByType as { [key: string]: string }, field, options);
     }
 
     return isValid;
@@ -290,7 +281,7 @@ export function validateForm(form: HTMLFormElement, options?: FormousOptions): b
     let isValid = true;
 
     fields.forEach((field) => {
-        if (!validateField(field as FormElement, options)) {
+        if (!validateField(field as FormElement, options, true)) {
             if (isValid) {  // 最初のエラーフィールドの場合のみスクロール
                 const errorField = field as HTMLElement;
                 smoothScroll(errorField, options?.scrollOptions);
