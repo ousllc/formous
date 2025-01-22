@@ -2,8 +2,8 @@ import { FormousOptions } from './types';
 
 // バリデーションルールの型定義
 export type ValidationRule = {
-    validate: (value: string, field: HTMLInputElement, options?: FormousOptions) => boolean;
-    message: (field: HTMLInputElement, options?: FormousOptions) => string;
+    validate: (value: string, field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement, options?: FormousOptions) => boolean;
+    message: (field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement, options?: FormousOptions) => string;
 };
 
 // デフォルトのバリデーションルールセット
@@ -16,6 +16,11 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
                 field.getAttribute('data-validation')?.includes('required') ||
                 field.closest('fieldset[data-validation="required"]') !== null;
             
+            // チェックボックスの場合は、チェック状態を確認
+            if (isRequired && field instanceof HTMLInputElement && field.type === 'checkbox') {
+                return field.checked;
+            }
+            
             // ラジオボタンの場合は、グループ内のいずれかが選択されているかチェック
             if (isRequired && field.type === 'radio') {
                 const name = field.getAttribute('name');
@@ -23,6 +28,11 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
                     const checkedRadio = field.closest('form')?.querySelector(`input[name="${name}"]:checked`);
                     return !!checkedRadio;
                 }
+            }
+            
+            // セレクトボックスの場合は、選択されている値が空でないかを確認
+            if (isRequired && field instanceof HTMLSelectElement) {
+                return field.value !== '';
             }
             
             return !isRequired || value.trim().length > 0;
@@ -56,36 +66,36 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
         message: (field) => `Minimum length is ${field.getAttribute('minlength')}`,
     },
     maxLength: {
-        validate: (value: string, field: HTMLInputElement) => {
+        validate: (value: string, field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => {
             const maxLength = field.getAttribute('maxlength');
             if (!maxLength) return true;
             return value.length <= Number(maxLength);
         },
-        message: (field: HTMLInputElement) => {
+        message: (field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => {
             const maxLength = field.getAttribute('maxlength');
             return `Please enter no more than ${maxLength} characters`;
         }
     },
     min: {
-        validate: (value: string, field: HTMLInputElement) => {
+        validate: (value: string, field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => {
             const minValue = field.getAttribute('min');
             if (!minValue) return true;
             const numValue = Number(value);
             return !isNaN(numValue) && numValue >= Number(minValue);
         },
-        message: (field: HTMLInputElement) => {
+        message: (field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => {
             const min = field.getAttribute('min');
             return `Please enter a value greater than or equal to ${min}`;
         }
     },
     max: {
-        validate: (value: string, field: HTMLInputElement) => {
+        validate: (value: string, field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => {
             const maxValue = field.getAttribute('max');
             if (!maxValue) return true;
             const numValue = Number(value);
             return !isNaN(numValue) && numValue <= Number(maxValue);
         },
-        message: (field: HTMLInputElement) => {
+        message: (field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => {
             const max = field.getAttribute('max');
             return `Please enter a value less than or equal to ${max}`;
         }
@@ -242,7 +252,7 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
         message: () => 'Email addresses do not match.',
     },
     'password': {
-        validate: (value: string, _: HTMLInputElement, options?: FormousOptions) => {
+        validate: (value: string, _field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement, options?: FormousOptions) => {
             const config = options?.validationPatterns?.password || {};
             const minLength = config.minLength ?? 8;
             const maxLength = config.maxLength ?? 100;
@@ -257,7 +267,7 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
             
             return true;
         },
-        message: (_: HTMLInputElement, options?: FormousOptions) => {
+        message: (_field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement, options?: FormousOptions) => {
             const config = options?.validationPatterns?.password || {};
             const minLength = config.minLength ?? 8;
             const maxLength = config.maxLength ?? 100;
@@ -275,7 +285,7 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
         }
     },
     halfwidthKatakana: {
-        validate: (value) => {
+        validate: (value: string, _field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => {
             if (!value) return true;
             // 半角カタカナの正規表現
             return /^[ｦ-ﾟ]+$/.test(value);

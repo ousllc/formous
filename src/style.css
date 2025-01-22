@@ -53,6 +53,7 @@ input[type="password"],
 input[type="date"],
 input[type="time"],
 input[type="url"],
+select,
 textarea {
   width: 100%;
   padding: 0.75rem;
@@ -223,4 +224,13 @@ button:hover {
 .radio-wrapper label {
   margin: 0;
   cursor: pointer;
+}
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23e5e5e5' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
 } 

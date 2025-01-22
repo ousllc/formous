@@ -6,7 +6,7 @@ export declare const ValidationRules: {
 export declare function addCustomValidationRules(customRules: {
     [key: string]: ValidationRule;
 }): void;
-export declare function validateField(field: HTMLInputElement, options?: FormousOptions, showGlobalErrors?: boolean): boolean;
+export declare function validateField(field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement, options?: FormousOptions, showGlobalErrors?: boolean): boolean;
 /**
  * スムーズスクロール機能を提供する関数
  * @param element - スクロール対象のHTML要素

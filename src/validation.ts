@@ -13,16 +13,10 @@ export function addCustomValidationRules(customRules: { [key: string]: Validatio
 }
 
 // 単一のフィールドをバリデートする関数
-export function validateField(field: HTMLInputElement, options?: FormousOptions, showGlobalErrors: boolean = false): boolean {
+export function validateField(field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement, options?: FormousOptions, showGlobalErrors: boolean = false): boolean {
     const fieldset = field.closest('fieldset[data-validation]');
     let isValid = true;
-    let errorsByType: { [key: string]: string | ((field: HTMLInputElement) => string) } = {};
-
-    // チェックボックスのrequired属性チェックを最初に行う
-    if (field.type === 'checkbox' && field.hasAttribute('required') && !field.checked) {
-        errorsByType['required'] = ValidationRules.required.message(field);
-        isValid = false;
-    }
+    let errorsByType: { [key: string]: string | ((field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => string) } = {};
 
     // HTML標準属性のバリデーション
     const standardValidations = [
@@ -49,22 +43,25 @@ export function validateField(field: HTMLInputElement, options?: FormousOptions,
             if (rule && !rule.validate(field.value, field)) {
                 const optionMessage = options?.validationMessages?.[validation.type];
                 if (optionMessage) {
-                    errorsByType[validation.type] = optionMessage;
+                    errorsByType[validation.type] = optionMessage as string;
+                } else {
+                    errorsByType[validation.type] = rule.message(field);
                 }
                 isValid = false;
             }
         }
     });
 
-
-    // type属性のバリデーション
-    if (field.type in typeValidations) {
+    // type属性のバリデーション（HTMLInputElementの場合のみ）
+    if (field instanceof HTMLInputElement && field.type in typeValidations) {
         const validationType = typeValidations[field.type as keyof typeof typeValidations];
         const rule = ValidationRules[validationType];
         if (rule && !rule.validate(field.value, field)) {
             const optionMessage = options?.validationMessages?.[validationType];
             if (optionMessage) {
-                errorsByType[validationType] = optionMessage;
+                errorsByType[validationType] = optionMessage as string;
+            } else {
+                errorsByType[validationType] = rule.message(field);
             }
             isValid = false;
         }
@@ -78,13 +75,13 @@ export function validateField(field: HTMLInputElement, options?: FormousOptions,
     validationTypes.forEach(type => {
         const rule = ValidationRules[type];
         if (rule) {
-            const result = rule.validate(field.value, field, options);
+            const result = rule.validate(field.value, field as HTMLInputElement, options);
             if (!result) {
                 const optionMessage = options?.validationMessages?.[type];
                 if (optionMessage) {
-                    errorsByType[type] = optionMessage;
+                    errorsByType[type] = optionMessage as string;
                 } else {
-                    errorsByType[type] = rule.message(field, options);
+                    errorsByType[type] = rule.message(field as HTMLInputElement, options);
                 }
                 isValid = false;
             }
@@ -103,7 +100,7 @@ export function validateField(field: HTMLInputElement, options?: FormousOptions,
         } else {
             errorElements = container.querySelectorAll('[data-validation="error"]');
         }
-        updateErrorElements(errorElements, errorsByType as { [key: string]: string }, field, options);
+        updateErrorElements(errorElements, errorsByType as { [key: string]: string }, field as HTMLInputElement, options);
     }
 
     // data-validation-for属性を持つ離れた場所のエラー要素を探して更新
@@ -114,7 +111,7 @@ export function validateField(field: HTMLInputElement, options?: FormousOptions,
 
         // グローバルエラーの表示制御
         if (showGlobalErrors || globalErrorContainer?.classList.contains('active')) {
-            updateErrorElements(remoteErrorElements, errorsByType as { [key: string]: string }, field, options);
+            updateErrorElements(remoteErrorElements, errorsByType as { [key: string]: string }, field as HTMLInputElement, options);
         }
 
         // グローバルエラーコンテナの表示制御

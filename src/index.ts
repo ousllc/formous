@@ -3,6 +3,7 @@
  * フォームのバリデーション、スクロール、ステップ管理などの機能を提供
  */
 import { validateField, validateForm, addCustomValidationRules } from './validation';
+import { ValidationRule } from './validationRules';
 import { initializeStepForm } from './step';
 import { FormousOptions } from './types';
 
@@ -48,7 +49,7 @@ const FormousInit = (options: FormousOptions) => {
 
   // 1. カスタムバリデーションの設定
   if (options.customRules) {
-    addCustomValidationRules(options.customRules);
+    addCustomValidationRules(options.customRules as { [key: string]: ValidationRule });
   }
 
   // 2. リアルタイムバリデーションの設定
