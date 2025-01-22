@@ -258,7 +258,7 @@ function $(e, t, r = !1) {
   if (b) {
     let c;
     if (e.type === "radio" || f) {
-      const h = b.nextElementSibling || ((g = b.closest(".form-section")) == null ? void 0 : g.nextElementSibling);
+      const h = b.nextElementSibling || ((g = b.closest('[data-error="target"]')) == null ? void 0 : g.nextElementSibling);
       c = h != null && h.matches('[data-validation="error"]') ? /* @__PURE__ */ new Set([h]) : b.querySelectorAll('[data-validation="error"]');
     } else
       c = b.querySelectorAll('[data-validation="error"]');

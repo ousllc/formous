@@ -109,7 +109,7 @@ export function validateField(field: FormElement, options?: FormousOptions, show
         if (field.type === 'radio' || groupContainer) {
             // ラジオボタンとチェックボックスグループの場合は、次の要素のエラーを探す
             const nextError = errorContainer.nextElementSibling || 
-                errorContainer.closest('.form-section')?.nextElementSibling;
+                errorContainer.closest('[data-error="target"]')?.nextElementSibling;
             errorElements = nextError?.matches('[data-validation="error"]')
                 ? new Set([nextError]) as any
                 : errorContainer.querySelectorAll('[data-validation="error"]');
