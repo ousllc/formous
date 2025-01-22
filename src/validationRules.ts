@@ -251,7 +251,7 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
         },
         message: () => 'Email addresses do not match.',
     },
-    'password': {
+    password: {
         validate: (value: string, _field: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement, options?: FormousOptions) => {
             const config = options?.validationPatterns?.password || {};
             const minLength = config.minLength ?? 8;

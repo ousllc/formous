@@ -40,6 +40,10 @@ export function validateField(field: HTMLInputElement | HTMLSelectElement | HTML
     standardValidations.forEach(validation => {
         if (field.hasAttribute(validation.attr)) {
             const rule = ValidationRules[validation.type];
+            // 必須でない場合は、空値をスキップ
+            if (validation.type !== 'required' && !field.hasAttribute('required') && !field.value) {
+                return;
+            }
             if (rule && !rule.validate(field.value, field)) {
                 const optionMessage = options?.validationMessages?.[validation.type];
                 if (optionMessage) {
@@ -56,6 +60,10 @@ export function validateField(field: HTMLInputElement | HTMLSelectElement | HTML
     if (field instanceof HTMLInputElement && field.type in typeValidations) {
         const validationType = typeValidations[field.type as keyof typeof typeValidations];
         const rule = ValidationRules[validationType];
+        // 必須でない場合は、空値をスキップ
+        if (!field.hasAttribute('required') && !field.value) {
+            return true;
+        }
         if (rule && !rule.validate(field.value, field)) {
             const optionMessage = options?.validationMessages?.[validationType];
             if (optionMessage) {
