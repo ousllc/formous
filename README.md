@@ -37,9 +37,9 @@ Formousは、フォームの実装を簡単にするTypeScriptライブラリで
 ### CDNでの利用
 ```html
 <!-- 推奨: 特定のバージョンを指定 -->
-<script src="https://cdn.jsdelivr.net/npm/@ousllc/formous@v0.2.7"></script>
+<script src="https://cdn.jsdelivr.net/gh/ousllc/formous@v0.2.7/dist/formous.min.js"></script>
 <!-- または最新版を使用 -->
-<script src="https://cdn.jsdelivr.net/npm/@ousllc/formous@latest"></script>
+<script src="https://cdn.jsdelivr.net/gh/ousllc/formous@latest/dist/formous.min.js"></script>
 <script>
   Formous({
     formSelector: '#myForm'
