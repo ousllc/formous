@@ -36,6 +36,9 @@ Formousは、フォームの実装を簡単にするTypeScriptライブラリで
 
 ### CDNでの利用
 ```html
+<!-- 推奨: 特定のバージョンを指定 -->
+<script src="https://cdn.jsdelivr.net/npm/@ousllc/formous@v0.2.7"></script>
+<!-- または最新版を使用 -->
 <script src="https://cdn.jsdelivr.net/npm/@ousllc/formous@latest"></script>
 <script>
   Formous({
@@ -572,6 +575,9 @@ Formous({
 - エラーハンドリングを詳細に制御したい場合
 
 **注意**: `customSubmit`を使用する場合、WebflowのデフォルトのSubmit処理は実行されません。必要に応じて`customSubmit`内で明示的に呼び出す必要があります。
+
+## 最新バージョン
+現在の最新バージョンは v0.2.7 です。
 
 ## ライセンス
 MIT
