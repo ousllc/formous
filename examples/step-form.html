@@ -63,7 +63,7 @@
         </div>
 
         <!-- 性別 -->
-        <div class="radio-group">
+        <div class="radio-group" data-error="target">
           <label>性別:</label>
           <div class="radio-wrapper">
             <input type="radio" id="gender-male" name="gender" value="male" required>
@@ -77,8 +77,8 @@
             <input type="radio" id="gender-other" name="gender" value="other" required>
             <label for="gender-other">その他</label>
           </div>
-          <div data-validation="error" data-error-fixed>性別を選択してください</div>
         </div>
+        <div data-validation="error" data-error-fixed>性別を選択してください</div>
 
         <!-- メールアドレス -->
         <div>

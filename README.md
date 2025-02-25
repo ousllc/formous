@@ -60,6 +60,22 @@ Formous({
 });
 ```
 
+### HTML構造とデータ属性
+
+#### 基本構造
+```html
+<form id="step-form" novalidate>
+  <div>
+    <label>メールアドレス:</label>
+    <input type="email" data-validation="required email" />
+    <!-- エラー表示要素は必ず対応するinput要素と同じ親要素内に配置する必要があります -->
+    <div data-validation="error"></div>
+  </div>
+</form>
+```
+
+**重要**: エラー表示要素（`data-validation="error"`）は、必ず対応する入力要素と同じ親要素内に配置してください。これは、エラーメッセージが正しく表示されるために必要な構造です。
+
 ## HTML構造とデータ属性
 
 ### 基本構造
@@ -151,8 +167,11 @@ Formous({
 <div data-error="target">
   <input type="text" required />
 </div>
-<div data-validation="error"></div>
+<!-- エラーメッセージは親要素の後に表示 -->
+<div data-validation="error">メールアドレスを入力してください</div>
 ```
+
+**注意**: `data-error="target"`を使用する場合、エラーメッセージ要素は`target`属性を持つ要素の**兄弟要素**として配置する必要があります。これにより、入力要素とエラーメッセージ要素が異なる階層にある場合でも、正しくエラーメッセージを表示できます。
 
 #### 特定のバリデーションタイプに対するエラー
 - `data-validation-type="required"`: 特定のバリデーションタイプに対するエラー
