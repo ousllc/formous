@@ -211,34 +211,29 @@ export const defaultValidationRules: { [key: string]: ValidationRule } = {
         message: () => 'Please enter a valid JSON string.',
     },
     'checkbox-group': {
-        validate: (_, field) => {
+        validate: (_value, field) => {
             const group = field.closest('[data-validation="checkbox-group"]');
-            if (!group) return true; // グループがない場合は無効としない
+            if (!group) return true;
     
             const checkboxes = group.querySelectorAll('input[type="checkbox"]');
             const min = parseInt(group.getAttribute('data-group-min') || '0', 10);
             const max = group.getAttribute('data-group-max') ? parseInt(group.getAttribute('data-group-max') || '0', 10) : checkboxes.length;
             const checkedCount = Array.from(checkboxes).filter((checkbox) => (checkbox as HTMLInputElement).checked).length;
     
-            if (!group.getAttribute('data-group-min') && checkedCount > max) {
-                return false;
-            }
-            if (!group.getAttribute('data-group-max') && checkedCount < min) {
-                return false;
-            }
             return checkedCount >= min && checkedCount <= max;
         },
-        message: (field) => {
+        message: (field, options) => {
+            // オプションでメッセージが指定されている場合はそれを使用
+            if (options?.validationMessages?.['checkbox-group']) {
+                return typeof options.validationMessages['checkbox-group'] === 'function'
+                    ? options.validationMessages['checkbox-group'](field as HTMLInputElement)
+                    : options.validationMessages['checkbox-group'];
+            }
+
             const group = field.closest('[data-validation="checkbox-group"]');
             const min = group?.getAttribute('data-group-min') || '0';
             const max = group?.getAttribute('data-group-max') || '∞';
     
-            if (!group?.getAttribute('data-group-min')) {
-                return `Please select at most ${max} options.`;
-            }
-            if (!group?.getAttribute('data-group-max')) {
-                return `Please select at least ${min} options.`;
-            }
             return `Please select between ${min} and ${max} options.`;
         },
     },

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Step Form | Formous</title>
+  <title>留学申込フォーム | Formous</title>
   <link rel="stylesheet" href="../src/style.css" />
   <script type="module" src="../src/index.ts"></script>
 </head>
@@ -30,207 +30,325 @@
 
     <form id="step-form" novalidate>
 
-      <!-- Step 1: 基本情報 -->
+      <!-- Step 1: 個人情報 -->
       <div class="step">
-        <h4>基本情報</h4>
+        <h3>個人情報</h3>
 
-        <!-- First Name -->
-        <div>
-          <label for="firstName">First Name:</label>
-          <input type="text" id="firstName" name="firstName" minlength="2" maxlength="30" required />
-          <div data-validation="error" data-error-fixed>必須</div>
+        <!-- 姓名 -->
+        <div class="form-row">
+          <div class="form-col">
+            <label for="lastName">姓:</label>
+            <input type="text" id="lastName" name="lastName" minlength="1" maxlength="20" required />
+            <div data-validation="error"></div>
+          </div>
+          <div class="form-col">
+            <label for="firstName">名:</label>
+            <input type="text" id="firstName" name="firstName" minlength="1" maxlength="20" required />
+            <div data-validation="error"></div>
+          </div>
         </div>
 
-        <!-- Last Name -->
+        <!-- フリガナ -->
+        <div class="form-row">
+          <div class="form-col">
+            <label for="lastNameKana">セイ:</label>
+            <input type="text" id="lastNameKana" name="lastNameKana" data-validation="halfwidthKatakana" required />
+            <div data-validation="error"></div>
+          </div>
+          <div class="form-col">
+            <label for="firstNameKana">メイ:</label>
+            <input type="text" id="firstNameKana" name="firstNameKana" data-validation="halfwidthKatakana" required />
+            <div data-validation="error"></div>
+          </div>
+        </div>
+
+        <!-- 性別 -->
+        <div class="radio-group">
+          <label>性別:</label>
+          <div class="radio-wrapper">
+            <input type="radio" id="gender-male" name="gender" value="male" required>
+            <label for="gender-male">男性</label>
+          </div>
+          <div class="radio-wrapper">
+            <input type="radio" id="gender-female" name="gender" value="female" required>
+            <label for="gender-female">女性</label>
+          </div>
+          <div class="radio-wrapper">
+            <input type="radio" id="gender-other" name="gender" value="other" required>
+            <label for="gender-other">その他</label>
+          </div>
+          <div data-validation="error" data-error-fixed>性別を選択してください</div>
+        </div>
+
+        <!-- メールアドレス -->
         <div>
-          <label for="lastName">Last Name:</label>
-          <input type="text" id="lastName" data-validation="alphanumeric" name="lastName" minlength="2" maxlength="30" required />
+          <label for="email">メールアドレス:</label>
+          <input type="email" id="email" name="email" required />
           <div data-validation="error"></div>
-          <!-- <div data-validation="error" data-validation-type="minLength">2文字以上で入力してください</div> -->
         </div>
 
-        <!-- Email -->
+        <!-- メールアドレス確認 -->
         <div>
-          <label for="email">Email:</label>
-          <input type="email" id="email" name="email" />
-          <div data-validation="error">正しいメールアドレスを入力してください</div>
-        </div>
-
-        <!-- Confirm Email -->
-        <div>
-          <label for="confirmEmail">Confirm Email:</label>
-          <input type="email" id="confirmEmail" name="confirmEmail" data-validation="equals" data-equals="email"
-            />
+          <label for="confirmEmail">メールアドレス（確認）:</label>
+          <input type="email" id="confirmEmail" name="confirmEmail" 
+            data-validation="equals" data-equals="email" required />
           <div data-validation="error"></div>
         </div>
 
-        <!-- Password -->
+        <!-- パスワード -->
         <div>
-          <label for="password">Password:</label>
+          <label for="password">パスワード:</label>
           <input type="password" id="password" name="password" data-validation="password" required />
-          <div data-validation="error" data-validation-type="password"></div>
-        </div>
-
-        <div>
-          <label for="selectCountry">Select Country:</label>
-          <select id="selectCountry" name="selectCountry" required>
-            <option value="">選択してください</option>
-            <option value="JP">Japan</option>
-            <option value="US">United States</option>
-            <option value="UK">United Kingdom</option>
-          </select>
           <div data-validation="error"></div>
-        </div>
-
-        <div class="checkbox-field">
-          <label class="w-checkbox checkbox-field">
-            <input type="checkbox" required name="agreement" data-name="agreement">
-            <span>同意する</span>
-          </label>
-          <div data-validation="error"></div>
-        </div>
-
-        <button type="button" data-action="next">Next</button>
-      </div>
-
-      <!-- Step 2: 興味・関心 -->
-      <div class="step">
-        <h4>興味・関心</h4>
-        <p>First Name: <span data-confirm="firstName"></span></p>
-
-        <!-- 開発分野 -->
-        <div data-validation="checkbox-group" data-group-min="2">
-          <h4>興味のある開発分野（2つ以上5つまで選択）：</h4>
-          <div class="checkbox-wrapper">
-            <input type="checkbox" id="dev-frontend" name="development" value="frontend">
-            <label for="dev-frontend">フロントエンド</label>
-          </div>
-          <div class="checkbox-wrapper">
-            <input type="checkbox" id="dev-backend" name="development" value="backend">
-            <label for="dev-backend">バックエンド</label>
-          </div>
-          <div class="checkbox-wrapper">
-            <input type="checkbox" id="dev-mobile" name="development" value="mobile">
-            <label for="dev-mobile">モバイル</label>
-          </div>
-          <div class="checkbox-wrapper">
-            <input type="checkbox" id="dev-ai" name="development" value="ai">
-            <label for="dev-ai">AI/機械学習</label>
-          </div>
-          <div class="checkbox-wrapper">
-            <input type="checkbox" id="dev-devops" name="development" value="devops">
-            <label for="dev-devops">DevOps</label>
-          </div>
-          <div class="checkbox-wrapper">
-            <input type="checkbox" id="dev-security" name="development" value="security">
-            <label for="dev-security">セキュリティ</label>
-          </div>
-          <div data-validation="error">
-          </div>
-        </div>
-
-        <!-- 学習方法 -->
-        <div>
-          <label>希望する学習方法：</label>
-          <div class="radio-wrapper">
-            <input type="radio" id="learning-online" name="learning" value="online" required>
-            <label for="learning-online">オンライン学習</label>
-          </div>
-          <div class="radio-wrapper">
-            <input type="radio" id="learning-offline" name="learning" value="offline">
-            <label for="learning-offline">対面学習</label>
-          </div>
-          <div class="radio-wrapper">
-            <input type="radio" id="learning-hybrid" name="learning" value="hybrid">
-            <label for="learning-hybrid">ハイブリッド</label>
-          </div>
-          <div data-validation="error">学習方法を選択してください</div>
-        </div>
-
-        <button type="button" data-action="previous">Previous</button>
-        <button type="button" data-action="next">Next</button>
-      </div>
-
-      <!-- Step 3: その他情報 -->
-      <div class="step">
-        <h4>その他情報</h4>
-
-        <!-- URL -->
-        <div>
-          <label for="portfolio">Portfolio URL:</label>
-          <input type="url" id="portfolio" name="portfolio" data-validation="url" />
-          <div data-validation="error" data-validation-type="url">有効なURLを入力してください</div>
-        </div>
-
-        <!-- 電話番号 -->
-        <div>
-          <label for="phone">Phone:</label>
-          <input type="tel" id="phone" name="phone" data-validation="phone" required />
-          <div data-validation="error" data-validation-type="phone">有効な電話番号を入力してください</div>
-        </div>
-
-        <!-- 郵便番号 -->
-        <div>
-          <label for="postalCode">郵便番号:</label>
-          <input type="text" id="postalCode" name="postalCode" data-validation="postalCode" data-country="JP" required />
-          <div data-validation="error">有効な郵便番号を入力してください</div>
         </div>
 
         <!-- 生年月日 -->
         <div>
           <label for="birthdate">生年月日:</label>
-          <input type="date" id="birthdate" name="birthdate" data-validation="date" required />
-          <div data-validation="error" data-validation-type="date">有効な日付を入力してください</div>
+          <input type="date" id="birthdate" name="birthdate" required />
+          <div data-validation="error"></div>
         </div>
 
-        <!-- 時間 -->
+        <!-- 電話番号 -->
+        <div>
+          <label for="phone">電話番号:</label>
+          <input type="tel" id="phone" name="phone" data-validation="phone" required />
+          <div data-validation="error"></div>
+        </div>
+
+        <!-- 郵便番号 -->
+        <div>
+          <label for="postalCode">郵便番号:</label>
+          <input type="text" id="postalCode" name="postalCode" 
+            data-validation="postalCode" data-country="JP" required />
+          <div data-validation="error"></div>
+        </div>
+
+        <button type="button" data-action="next">次へ</button>
+      </div>
+
+      <!-- Step 2: 留学情報 -->
+      <div class="step">
+        <h3>留学情報</h3>
+
+        <!-- 希望留学国 -->
+        <div>
+          <label for="country">希望留学国:</label>
+          <select id="country" name="country" required>
+            <option value="">選択してください</option>
+            <option value="US">アメリカ</option>
+            <option value="UK">イギリス</option>
+            <option value="AU">オーストラリア</option>
+            <option value="CA">カナダ</option>
+            <option value="NZ">ニュージーランド</option>
+          </select>
+          <div data-validation="error"></div>
+        </div>
+
+        <!-- 留学期間 -->
+        <div>
+          <label>希望留学期間:</label>
+          <div class="radio-wrapper">
+            <input type="radio" id="duration-3" name="duration" value="3" required>
+            <label for="duration-3">3ヶ月</label>
+          </div>
+          <div class="radio-wrapper">
+            <input type="radio" id="duration-6" name="duration" value="6">
+            <label for="duration-6">6ヶ月</label>
+          </div>
+          <div class="radio-wrapper">
+            <input type="radio" id="duration-12" name="duration" value="12">
+            <label for="duration-12">1年</label>
+          </div>
+          <div class="radio-wrapper">
+            <input type="radio" id="duration-24" name="duration" value="24">
+            <label for="duration-24">2年以上</label>
+          </div>
+          <div data-validation="error" data-validation-type="required">留学期間を選択してください</div>
+        </div>
+
+        <!-- 語学力 -->
+        <fieldset data-validation="checkbox-group" data-group-min="1">
+          <legend>保有している語学資格（1つ以上）:</legend>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="lang-toeic" name="language" value="toeic">
+            <label for="lang-toeic">TOEIC (700以上)</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="lang-toefl" name="language" value="toefl">
+            <label for="lang-toefl">TOEFL iBT (70以上)</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="lang-ielts" name="language" value="ielts">
+            <label for="lang-ielts">IELTS (6.0以上)</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="lang-other" name="language" value="other">
+            <label for="lang-other">その他</label>
+          </div>
+          <div data-validation="error">1つ以上選択してください</div>
+        </fieldset>
+
+        <!-- 希望学習分野 -->
+        <fieldset data-validation="checkbox-group" data-group-min="1" data-group-max="3">
+          <legend>希望する学習分野（1つ以上3つまで）:</legend>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="field-business" name="fields" value="business">
+            <label for="field-business">ビジネス</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="field-it" name="fields" value="it">
+            <label for="field-it">IT・コンピュータ</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="field-design" name="fields" value="design">
+            <label for="field-design">デザイン</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="field-medical" name="fields" value="medical">
+            <label for="field-medical">医療・看護</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="field-art" name="fields" value="art">
+            <label for="field-art">芸術</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="field-other" name="fields" value="other">
+            <label for="field-other">その他</label>
+          </div>
+          <div data-validation="error"></div>
+        </fieldset>
+
+        <div class="button-group">
+          <button type="button" data-action="previous">戻る</button>
+          <button type="button" data-action="next">次へ</button>
+        </div>
+      </div>
+
+      <!-- Step 3: その他情報 -->
+      <div class="step">
+        <h3>その他情報</h3>
+
+        <!-- ポートフォリオURL -->
+        <div>
+          <label for="portfolio">ポートフォリオURL（任意）:</label>
+          <input type="url" id="portfolio" name="portfolio" data-validation="url" />
+          <div data-validation="error"></div>
+        </div>
+
+        <!-- 希望連絡時間 -->
         <div>
           <label for="preferredTime">希望連絡時間:</label>
           <input type="time" id="preferredTime" name="preferredTime" data-validation="time" required />
-          <div data-validation="error" data-validation-type="time">有効な時間を入力してください</div>
+          <div data-validation="error"></div>
         </div>
 
-        <button type="button" data-action="previous">Previous</button>
-        <button type="button" data-action="next">確認する</button>
+        <!-- 現在の職業 -->
+        <div>
+          <label for="occupation">現在の職業:</label>
+          <select id="occupation" name="occupation" required>
+            <option value="">選択してください</option>
+            <option value="student">学生</option>
+            <option value="employed">会社員</option>
+            <option value="self-employed">自営業</option>
+            <option value="unemployed">無職</option>
+            <option value="other">その他</option>
+          </select>
+          <div data-validation="error"></div>
+        </div>
+
+        <!-- 留学経験 -->
+        <div>
+          <label>留学経験:</label>
+          <div class="radio-wrapper">
+            <input type="radio" id="exp-yes" name="experience" value="yes" required>
+            <label for="exp-yes">あり</label>
+          </div>
+          <div class="radio-wrapper">
+            <input type="radio" id="exp-no" name="experience" value="no">
+            <label for="exp-no">なし</label>
+          </div>
+          <div data-validation="error" data-validation-type="required">留学経験の有無を選択してください</div>
+        </div>
+
+        <!-- お問い合わせ内容 -->
+        <div>
+          <label for="message">お問い合わせ内容:</label>
+          <textarea id="message" name="message" required minlength="10" maxlength="1000"
+            placeholder="ご質問や気になることがございましたらご記入ください"></textarea>
+          <div data-validation="error"></div>
+        </div>
+
+        <div class="button-group">
+          <button type="button" data-action="previous">戻る</button>
+          <button type="button" data-action="next">確認する</button>
+        </div>
       </div>
 
       <!-- 確認ページ -->
       <div class="step" data-confirmation="true">
-        <h3>Confirmation</h3>
+        <h3>入力内容の確認</h3>
 
         <!-- Step 1の確認 -->
         <div class="confirmation-section" data-step="1">
-          <h4>基本情報</h4>
-          <p>First Name: <span data-confirm="firstName"></span></p>
-          <p>Last Name: <span data-confirm="lastName"></span></p>
-          <p>Email: <span data-confirm="email"></span></p>
+          <h4>個人情報</h4>
+          <p>お名前: <span data-confirm="lastName"></span> <span data-confirm="firstName"></span></p>
+          <p>フリガナ: <span data-confirm="lastNameKana"></span> <span data-confirm="firstNameKana"></span></p>
+          <p>性別: <span data-confirm="gender"></span></p>
+          <p>メールアドレス: <span data-confirm="email"></span></p>
+          <p>生年月日: <span data-confirm="birthdate"></span></p>
+          <p>電話番号: <span data-confirm="phone"></span></p>
+          <p>郵便番号: <span data-confirm="postalCode"></span></p>
           <button type="button" data-action="edit" data-target-step="1">編集する</button>
         </div>
 
         <!-- Step 2の確認 -->
         <div class="confirmation-section" data-step="2">
-          <h4>興味・関心</h4>
-          <p>開発分野: <span data-confirm="development"></span></p>
-          <p>学習方法: <span data-confirm="learning"></span></p>
+          <h4>留学情報</h4>
+          <p>希望留学国: <span data-confirm="country"></span></p>
+          <p>留学期間: <span data-confirm="duration"></span>ヶ月</p>
+          <p>語学資格: <span data-confirm="language"></span></p>
+          <p>希望学習分野: <span data-confirm="fields"></span></p>
           <button type="button" data-action="edit" data-target-step="2">編集する</button>
         </div>
 
         <!-- Step 3の確認 -->
         <div class="confirmation-section" data-step="3">
           <h4>その他情報</h4>
-          <p>Portfolio URL: <span data-confirm="portfolio"></span></p>
-          <p>Phone: <span data-confirm="phone"></span></p>
-          <p>郵便番号: <span data-confirm="postalCode"></span></p>
-          <p>生年月日: <span data-confirm="birthdate"></span></p>
+          <p>ポートフォリオURL: <span data-confirm="portfolio"></span></p>
           <p>希望連絡時間: <span data-confirm="preferredTime"></span></p>
+          <p>現在の職業: <span data-confirm="occupation"></span></p>
+          <p>留学経験: <span data-confirm="experience"></span></p>
+          <p>お問い合わせ内容: <span data-confirm="message"></span></p>
           <button type="button" data-action="edit" data-target-step="3">編集する</button>
         </div>
 
-        <button type="button" data-action="previous">Back</button>
-        <button type="submit">Submit</button>
+        <!-- 同意事項 -->
+        <div class="agreement-section">
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="privacy-policy" name="privacy-policy" required>
+            <label for="privacy-policy">
+              <a href="#" target="_blank">プライバシーポリシー</a>に同意する
+            </label>
+            <div data-validation="error"></div>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" id="terms" name="terms" required>
+            <label for="terms">
+              <a href="#" target="_blank">利用規約</a>に同意する
+            </label>
+            <div data-validation="error"></div>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="button" data-action="previous">戻る</button>
+          <button type="submit">送信する</button>
+        </div>
       </div>
+
       <div class="step-counter">
-        Step <span data-step-current>1</span>/<span data-step-total>3</span>
+        Step <span data-step-current>1</span>/<span data-step-total>4</span>
       </div>
     </form>
   </div>
@@ -241,37 +359,33 @@
         formSelector: '#step-form',
         scrollOptions: {
           offset: 50,
-          duration: '2s',
           behavior: 'smooth'
         },
-        confirmationOptions: {
-          delimiter: '/'
+        stepOptions: {
+          progressFillSelector: '#progress-fill',
+          indicatorSelector: '.step-indicator-item',
+          progressSelector: '#progress-bar',
+          stepActiveClass: 'active',
+          indicatorActiveClass: 'active',
+          useDisplayNone: true
         },
         validationMessages: {
-          required: '必須項目です！',
-          email: 'メールアドレスの形式が正しくありません！',
+          required: '必須項目です',
+          email: 'メールアドレスの形式が正しくありません',
+          equals: '入力内容が一致しません',
           minLength: (field) => `${field.getAttribute('minlength')}文字以上で入力してください`,
           maxLength: (field) => `${field.getAttribute('maxlength')}文字以下で入力してください`,
-          password: '8文字以上で、大文字・小文字・数字・記号(!@#$%^&*)をそれぞれ1文字以上含める必要があります',
-          alphanumeric: '半角英数字で入力してください'
-        },
-        validationPatterns: {
-          password: {
-            minLength: 5,
-            maxLength: 20,
-            requireUppercase: true,
-            requireNumber: true,
-            requireSymbol: false
+          halfwidthKatakana: '半角カタカナで入力してください',
+          url: '有効なURLを入力してください',
+          time: '有効な時間を入力してください',
+          'checkbox-group': (field) => {
+            const group = field.closest('[data-validation="checkbox-group"]');
+            const min = group?.getAttribute('data-group-min') || '1';
+            const max = group?.getAttribute('data-group-max');
+            return max 
+              ? `${min}個以上${max}個以下選択してください`
+              : `${min}個以上選択してください`;
           }
-        },
-        // ステップフォームの設定
-        stepOptions: {
-          progressFillSelector: '#progress-fill',  // プログレスバーの要素
-          indicatorSelector: '.step-indicator-item',    // ステップインジケーターの要素
-          progressSelector: '#step-progress',      // プログレス要素
-          stepActiveClass: 'active',              // アクティブなステップのクラス
-          indicatorActiveClass: 'active',         // アクティブなインジケーターのクラス
-          useDisplayNone: true                   // display: noneを使用するか
         }
       });
     });

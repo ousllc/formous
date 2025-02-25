@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,7 +19,7 @@
       <!-- 基本情報 -->
       <div class="form-section">
         <h4>基本情報</h4>
-        
+
         <!-- 名前 -->
         <div>
           <label for="name">名前:</label>
@@ -123,7 +124,8 @@
           email: 'メールアドレスの形式が正しくありません',
           minlength: (field) => `${field.getAttribute('minlength')}文字以上で入力してください`,
           maxlength: (field) => `${field.getAttribute('maxlength')}文字以下で入力してください`,
-          phone: '有効な電話番号を入力してください'
+          phone: '有効な電話番号を入力してください',
+          'checkbox-group': '選択数が範囲外です'
         },
         customRules: {
           phone: {
@@ -135,4 +137,5 @@
     });
   </script>
 </body>
-</html> 
+
+</html>

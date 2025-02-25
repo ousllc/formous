@@ -2,14 +2,14 @@ const D = {
   required: {
     // 入力が空でないか確認
     validate: (e, t) => {
-      var a, n;
-      const r = t.hasAttribute("required") || ((a = t.getAttribute("data-validation")) == null ? void 0 : a.includes("required")) || t.closest('fieldset[data-validation="required"]') !== null;
+      var n, a;
+      const r = t.hasAttribute("required") || ((n = t.getAttribute("data-validation")) == null ? void 0 : n.includes("required")) || t.closest('fieldset[data-validation="required"]') !== null;
       if (r && t instanceof HTMLInputElement && t.type === "checkbox")
         return t.checked;
       if (r && t.type === "radio") {
         const i = t.getAttribute("name");
         if (i)
-          return !!((n = t.closest("form")) == null ? void 0 : n.querySelector(`input[name="${i}"]:checked`));
+          return !!((a = t.closest("form")) == null ? void 0 : a.querySelector(`input[name="${i}"]:checked`));
       }
       return r && t instanceof HTMLSelectElement ? t.value !== "" : !r || e.trim().length > 0;
     },
@@ -48,8 +48,8 @@ const D = {
     validate: (e, t) => {
       const r = t.getAttribute("min");
       if (!r) return !0;
-      const a = Number(e);
-      return !isNaN(a) && a >= Number(r);
+      const n = Number(e);
+      return !isNaN(n) && n >= Number(r);
     },
     message: (e) => `Please enter a value greater than or equal to ${e.getAttribute("min")}`
   },
@@ -57,8 +57,8 @@ const D = {
     validate: (e, t) => {
       const r = t.getAttribute("max");
       if (!r) return !0;
-      const a = Number(e);
-      return !isNaN(a) && a <= Number(r);
+      const n = Number(e);
+      return !isNaN(n) && n <= Number(r);
     },
     message: (e) => `Please enter a value less than or equal to ${e.getAttribute("max")}`
   },
@@ -91,7 +91,7 @@ const D = {
   },
   postalCode: {
     validate: (e, t) => {
-      const r = t.getAttribute("data-country") || "JP", n = {
+      const r = t.getAttribute("data-country") || "JP", a = {
         JP: /^[0-9]{3}-[0-9]{4}$/,
         // ハイフンを必須に変更（123-4567のみ許可）
         US: /^\d{5}(-\d{4})?$/,
@@ -105,7 +105,7 @@ const D = {
         NL: /^\d{4}[ ]?[A-Z]{2}$/,
         CN: /^\d{6}$/
       }[r];
-      return n ? !e || n.test(e) : !0;
+      return a ? !e || a.test(e) : !0;
     },
     message: (e) => {
       const t = e.getAttribute("data-country") || "JP";
@@ -127,8 +127,8 @@ const D = {
   equals: {
     // 他のフィールドの値と一致するか確認
     validate: (e, t) => {
-      const r = t.getAttribute("data-equals"), a = r ? document.getElementById(r) : null;
-      return a ? e === a.value : !0;
+      const r = t.getAttribute("data-equals"), n = r ? document.getElementById(r) : null;
+      return n ? e === n.value : !0;
     },
     message: () => "Values do not match."
   },
@@ -165,19 +165,22 @@ const D = {
     validate: (e, t) => {
       const r = t.closest('[data-validation="checkbox-group"]');
       if (!r) return !0;
-      const a = r.querySelectorAll('input[type="checkbox"]'), n = parseInt(r.getAttribute("data-group-min") || "0", 10), i = r.getAttribute("data-group-max") ? parseInt(r.getAttribute("data-group-max") || "0", 10) : a.length, s = Array.from(a).filter((d) => d.checked).length;
-      return !r.getAttribute("data-group-min") && s > i || !r.getAttribute("data-group-max") && s < n ? !1 : s >= n && s <= i;
+      const n = r.querySelectorAll('input[type="checkbox"]'), a = parseInt(r.getAttribute("data-group-min") || "0", 10), i = r.getAttribute("data-group-max") ? parseInt(r.getAttribute("data-group-max") || "0", 10) : n.length, s = Array.from(n).filter((d) => d.checked).length;
+      return s >= a && s <= i;
     },
-    message: (e) => {
-      const t = e.closest('[data-validation="checkbox-group"]'), r = (t == null ? void 0 : t.getAttribute("data-group-min")) || "0", a = (t == null ? void 0 : t.getAttribute("data-group-max")) || "∞";
-      return t != null && t.getAttribute("data-group-min") ? t != null && t.getAttribute("data-group-max") ? `Please select between ${r} and ${a} options.` : `Please select at least ${r} options.` : `Please select at most ${a} options.`;
+    message: (e, t) => {
+      var i;
+      if ((i = t == null ? void 0 : t.validationMessages) != null && i["checkbox-group"])
+        return typeof t.validationMessages["checkbox-group"] == "function" ? t.validationMessages["checkbox-group"](e) : t.validationMessages["checkbox-group"];
+      const r = e.closest('[data-validation="checkbox-group"]'), n = (r == null ? void 0 : r.getAttribute("data-group-min")) || "0", a = (r == null ? void 0 : r.getAttribute("data-group-max")) || "∞";
+      return `Please select between ${n} and ${a} options.`;
     }
   },
   "confirm-email": {
     // メールアドレスが一致するか確認
     validate: (e, t) => {
-      var a;
-      const r = (a = t.form) == null ? void 0 : a.querySelector('input[data-validation~="email"]');
+      var n;
+      const r = (n = t.form) == null ? void 0 : n.querySelector('input[data-validation~="email"]');
       return !r || !r.value ? !0 : e === r.value;
     },
     message: () => "Email addresses do not match."
@@ -185,13 +188,13 @@ const D = {
   password: {
     validate: (e, t, r) => {
       var f;
-      const a = ((f = r == null ? void 0 : r.validationPatterns) == null ? void 0 : f.password) || {}, n = a.minLength ?? 8, i = a.maxLength ?? 100, s = a.requireUppercase ?? !0, d = a.requireNumber ?? !0, u = a.requireSymbol ?? !0;
-      return !(e.length < n || e.length > i || s && !/[A-Z]/.test(e) || d && !/\d/.test(e) || u && !/[!@#$%^&*]/.test(e));
+      const n = ((f = r == null ? void 0 : r.validationPatterns) == null ? void 0 : f.password) || {}, a = n.minLength ?? 8, i = n.maxLength ?? 100, s = n.requireUppercase ?? !0, d = n.requireNumber ?? !0, u = n.requireSymbol ?? !0;
+      return !(e.length < a || e.length > i || s && !/[A-Z]/.test(e) || d && !/\d/.test(e) || u && !/[!@#$%^&*]/.test(e));
     },
     message: (e, t) => {
       var f;
-      const r = ((f = t == null ? void 0 : t.validationPatterns) == null ? void 0 : f.password) || {}, a = r.minLength ?? 8, n = r.maxLength ?? 100, i = r.requireUppercase ?? !0, s = r.requireNumber ?? !0, d = r.requireSymbol ?? !0, u = [];
-      return u.push(`at least ${a} characters${n !== 100 ? `, maximum ${n} characters` : ""}`), i && u.push("uppercase letter"), s && u.push("number"), d && u.push("special character (!@#$%^&*)"), `Password must contain ${u.join(", ")}`;
+      const r = ((f = t == null ? void 0 : t.validationPatterns) == null ? void 0 : f.password) || {}, n = r.minLength ?? 8, a = r.maxLength ?? 100, i = r.requireUppercase ?? !0, s = r.requireNumber ?? !0, d = r.requireSymbol ?? !0, u = [];
+      return u.push(`at least ${n} characters${a !== 100 ? `, maximum ${a} characters` : ""}`), i && u.push("uppercase letter"), s && u.push("number"), d && u.push("special character (!@#$%^&*)"), `Password must contain ${u.join(", ")}`;
     }
   },
   halfwidthKatakana: {
@@ -206,9 +209,9 @@ const D = {
 function J(e) {
   Object.assign(L, e);
 }
-function $(e, t, r = !1) {
-  var A, x, g;
-  let a = !0, n = {};
+function k(e, t, r = !1) {
+  var y, x, g;
+  let n = !0, a = {};
   const i = [
     { attr: "required", type: "required" },
     { attr: "min", type: "min" },
@@ -231,7 +234,7 @@ function $(e, t, r = !1) {
         return;
       if (v && !v.validate(e.value, e)) {
         const p = (h = t == null ? void 0 : t.validationMessages) == null ? void 0 : h[c.type];
-        p ? n[c.type] = p : n[c.type] = v.message(e), a = !1;
+        p ? a[c.type] = p : a[c.type] = v.message(e), n = !1;
       }
     }
   }), e instanceof HTMLInputElement && e.type in s) {
@@ -239,8 +242,8 @@ function $(e, t, r = !1) {
     if (!e.hasAttribute("required") && !e.value)
       return !0;
     if (h && !h.validate(e.value, e)) {
-      const v = (A = t == null ? void 0 : t.validationMessages) == null ? void 0 : A[c];
-      v ? n[c] = v : n[c] = h.message(e), a = !1;
+      const v = (y = t == null ? void 0 : t.validationMessages) == null ? void 0 : y[c];
+      v ? a[c] = v : a[c] = h.message(e), n = !1;
     }
   }
   [
@@ -251,7 +254,7 @@ function $(e, t, r = !1) {
     const h = L[c];
     if (h && !h.validate(e.value, e, t)) {
       const E = (v = t == null ? void 0 : t.validationMessages) == null ? void 0 : v[c];
-      E ? n[c] = E : n[c] = h.message(e, t), a = !1;
+      E ? a[c] = E : a[c] = h.message(e, t), n = !1;
     }
   });
   const u = e.closest("div"), f = e.closest('[data-validation="checkbox-group"]'), b = f || u;
@@ -262,60 +265,60 @@ function $(e, t, r = !1) {
       c = h != null && h.matches('[data-validation="error"]') ? /* @__PURE__ */ new Set([h]) : b.querySelectorAll('[data-validation="error"]');
     } else
       c = b.querySelectorAll('[data-validation="error"]');
-    O(c, n, e, t);
+    O(c, a, e, t);
   }
   const w = e.getAttribute("name");
   if (w && r) {
     const c = document.querySelectorAll(`[data-validation="error"][data-validation-for="${w}"]`);
-    O(c, n, e, t);
+    O(c, a, e, t);
   }
-  return a;
+  return n;
 }
-function T(e, t, r, a) {
+function T(e, t, r, n) {
   var s, d;
   if (!r[e])
     return "";
-  const n = (s = t.closest("div")) == null ? void 0 : s.querySelector(`[data-validation-type="${e}"]`);
-  if (n != null && n.hasAttribute("data-error-fixed"))
-    return n.innerHTML;
-  const i = (d = a == null ? void 0 : a.validationMessages) == null ? void 0 : d[e];
+  const a = (s = t.closest("div")) == null ? void 0 : s.querySelector(`[data-validation-type="${e}"]`);
+  if (a != null && a.hasAttribute("data-error-fixed"))
+    return a.innerHTML;
+  const i = (d = n == null ? void 0 : n.validationMessages) == null ? void 0 : d[e];
   return i ? typeof i == "function" ? i(t) : i : r[e];
 }
-function O(e, t, r, a) {
-  const n = Object.keys(t).length > 0;
+function O(e, t, r, n) {
+  const a = Object.keys(t).length > 0;
   e.forEach((i) => {
-    var A;
+    var y;
     const s = i.getAttribute("data-validation-type"), d = i, u = d.innerHTML.trim(), f = d.hasAttribute("data-error-fixed");
     if (!s) {
-      if (n) {
-        const x = Object.keys(t)[0], g = T(x, r, t, a);
+      if (a) {
+        const x = Object.keys(t)[0], g = T(x, r, t, n);
         f || (d.innerHTML = g), d.style.display = "block";
       } else
         d.style.display = "none";
       return;
     }
-    const b = T(s, r, t, a);
+    const b = T(s, r, t, n);
     if (f) {
       d.style.display = t[s] ? "block" : "none";
       return;
     }
-    (((A = a == null ? void 0 : a.validationMessages) == null ? void 0 : A[s]) || !u) && (d.innerHTML = b), d.style.display = t[s] ? "block" : "none";
+    (((y = n == null ? void 0 : n.validationMessages) == null ? void 0 : y[s]) || !u) && (d.innerHTML = b), d.style.display = t[s] ? "block" : "none";
   });
 }
 function P(e, t = {}) {
   const {
     offset: r = 50,
-    behavior: a = "smooth",
-    duration: n = "0.5s"
+    behavior: n = "smooth",
+    duration: a = "0.5s"
   } = t;
-  document.documentElement.style.setProperty("scroll-behavior", a), document.documentElement.style.setProperty("transition-duration", n), e.style.scrollMargin = `${r}px`;
+  document.documentElement.style.setProperty("scroll-behavior", n), document.documentElement.style.setProperty("transition-duration", a), e.style.scrollMargin = `${r}px`;
   const i = window.scrollY, s = e.getBoundingClientRect();
   if (s.top >= 0 && s.bottom <= window.innerHeight) {
     e.focus();
     return;
   }
   e.scrollIntoView({
-    behavior: a,
+    behavior: n,
     block: "nearest",
     inline: "nearest"
   });
@@ -332,17 +335,17 @@ function P(e, t = {}) {
 }
 function H(e, t) {
   const r = e.querySelectorAll("input, textarea, select");
-  let a = !0;
-  return r.forEach((n) => {
-    $(n, t, !0) || (a && P(n, t == null ? void 0 : t.scrollOptions), a = !1);
-  }), a;
+  let n = !0;
+  return r.forEach((a) => {
+    k(a, t, !0) || (n && P(a, t == null ? void 0 : t.scrollOptions), n = !1);
+  }), n;
 }
 function j(e, t) {
   const {
     stepOptions: {
       useDisplayNone: r = !1,
-      stepActiveClass: a = "active",
-      indicatorActiveClass: n = "active",
+      stepActiveClass: n = "active",
+      indicatorActiveClass: a = "active",
       indicatorSelector: i = ".step-indicator",
       progressSelector: s = "#step-progress",
       progressFillSelector: d = "#progress-fill"
@@ -352,51 +355,51 @@ function j(e, t) {
   u.forEach((l, o) => {
     o !== 0 && (r && (l.style.display = "none"), l.classList.remove("active"));
   });
-  const f = document.querySelector(d), b = document.querySelectorAll(i), w = document.querySelector(s), A = document.querySelector("[data-step-current]"), x = document.querySelector("[data-step-total]");
+  const f = document.querySelector(d), b = document.querySelectorAll(i), w = document.querySelector(s), y = document.querySelector("[data-step-current]"), x = document.querySelector("[data-step-total]");
   let g = 0;
   const c = () => {
     const l = (g + 1) / u.length * 100;
     f && (f.style.width = `${l}%`), w && w.setAttribute("aria-valuenow", String(l)), b.forEach((o, m) => {
-      o.classList.toggle(n, m === g);
-    }), A && (A.textContent = String(g + 1)), x && (x.textContent = String(u.length));
+      o.classList.toggle(a, m === g);
+    }), y && (y.textContent = String(g + 1)), x && (x.textContent = String(u.length));
   }, h = () => {
     const o = u[g].querySelectorAll(
       'input, textarea, select, [contenteditable="true"], button[role="combobox"], div[role="listbox"], div[role="slider"], div[role="spinbutton"]'
     );
     let m = !0;
-    return o.forEach((y) => {
-      $(y, t) || (m = !1);
+    return o.forEach((A) => {
+      k(A, t) || (m = !1);
     }), m;
   }, v = () => {
     var m;
     const l = ((m = t == null ? void 0 : t.confirmationOptions) == null ? void 0 : m.delimiter) || ",";
-    e.querySelectorAll("[data-confirm]").forEach((y) => {
-      var C, M;
-      const q = y.getAttribute("data-confirm");
+    e.querySelectorAll("[data-confirm]").forEach((A) => {
+      var N, C;
+      const q = A.getAttribute("data-confirm");
       if (!q) return;
       const S = e.querySelector(`[name="${q}"]`);
       if (!S) return;
-      let k = "";
+      let $ = "";
       switch (S.type) {
         case "checkbox":
           const z = e.querySelectorAll(`input[name="${q}"]:checked`);
-          k = Array.from(z).map((I) => {
+          $ = Array.from(z).map((I) => {
             var R, F;
             return ((F = (R = I.labels) == null ? void 0 : R[0]) == null ? void 0 : F.textContent) || I.value;
           }).join(l);
           break;
         case "radio":
           const V = e.querySelector(`input[name="${q}"]:checked`);
-          k = V ? ((M = (C = V.labels) == null ? void 0 : C[0]) == null ? void 0 : M.textContent) || V.value : "";
+          $ = V ? ((C = (N = V.labels) == null ? void 0 : N[0]) == null ? void 0 : C.textContent) || V.value : "";
           break;
         default:
-          k = S.value;
+          $ = S.value;
       }
-      y.textContent = k || "未入力";
+      A.textContent = $ || "未入力";
     });
   }, p = (l) => {
     u.forEach((o, m) => {
-      o.classList.toggle(a, m === l), r && (o.style.display = m === l ? "block" : "none");
+      o.classList.toggle(n, m === l), r && (o.style.display = m === l ? "block" : "none");
     }), g = l, c(), v();
   }, E = () => {
     if (!h()) {
@@ -408,19 +411,19 @@ function j(e, t) {
       const o = document.querySelector('[data-scroll="top"]');
       o && P(o, t == null ? void 0 : t.scrollOptions);
     }, 100));
-  }, N = () => {
+  }, M = () => {
     g > 0 && (p(g - 1), setTimeout(() => {
       const l = document.querySelector('[data-scroll="top"]');
       l && P(l, t == null ? void 0 : t.scrollOptions);
     }, 100));
   }, U = (l) => {
     for (let o = g; o < l; o++) {
-      const m = u[o], y = m.querySelectorAll(
+      const m = u[o], A = m.querySelectorAll(
         'input, textarea, select, [contenteditable="true"]'
       );
       let q = !0;
-      if (y.forEach((S) => {
-        $(S, t) || (q = !1);
+      if (A.forEach((S) => {
+        k(S, t) || (q = !1);
       }), !q) {
         p(o);
         const S = m.querySelector("input:invalid, textarea:invalid, select:invalid");
@@ -436,10 +439,10 @@ function j(e, t) {
     if (o.hasAttribute("data-action")) {
       const m = o.getAttribute("data-action");
       if (m === "next" || m === "confirm") E();
-      else if (m === "previous") N();
+      else if (m === "previous") M();
       else if (m === "edit") {
-        const y = parseInt(o.getAttribute("data-target-step") || "1") - 1;
-        p(y);
+        const A = parseInt(o.getAttribute("data-target-step") || "1") - 1;
+        p(A);
       }
     }
   }), b.forEach((l, o) => {
@@ -447,7 +450,7 @@ function j(e, t) {
   }), {
     showStep: p,
     handleNext: E,
-    handlePrevious: N,
+    handlePrevious: M,
     updateProgressBar: c
   };
 }
@@ -464,26 +467,26 @@ const W = (e) => {
     console.error("Form not found");
     return;
   }
-  return t.querySelectorAll('[data-validation="error"]').forEach((n) => {
-    n.style.display = "none";
-  }), e.customRules && J(e.customRules), t.querySelectorAll("input, textarea, select").forEach((n) => {
-    n.addEventListener("input", () => $(n, e, !1)), n.addEventListener("blur", () => $(n, e, !1));
+  return t.querySelectorAll('[data-validation="error"]').forEach((a) => {
+    a.style.display = "none";
+  }), e.customRules && J(e.customRules), t.querySelectorAll("input, textarea, select").forEach((a) => {
+    a.addEventListener("input", () => k(a, e, !1)), a.addEventListener("blur", () => k(a, e, !1));
   }), e.enableWebflow ? (window.Webflow = window.Webflow || [], window.Webflow.push(() => {
-    t.setAttribute("novalidate", "true"), t.addEventListener("submit", function(n) {
+    t.setAttribute("novalidate", "true"), t.addEventListener("submit", function(a) {
       var s;
       if (!H(t, e)) {
-        n.preventDefault(), n.stopPropagation();
+        a.preventDefault(), a.stopPropagation();
         return;
       }
-      (s = e == null ? void 0 : e.webflowOptions) != null && s.customSubmit && (n.preventDefault(), n.stopPropagation(), e.webflowOptions.customSubmit(t));
+      (s = e == null ? void 0 : e.webflowOptions) != null && s.customSubmit && (a.preventDefault(), a.stopPropagation(), e.webflowOptions.customSubmit(t));
     });
-  })) : t.addEventListener("submit", async (n) => {
+  })) : t.addEventListener("submit", async (a) => {
     var s;
     if (!H(t, e)) {
-      n.preventDefault(), n.stopPropagation();
+      a.preventDefault(), a.stopPropagation();
       return;
     }
-    (s = e == null ? void 0 : e.webflowOptions) != null && s.customSubmit && (n.preventDefault(), n.stopPropagation(), e.webflowOptions.customSubmit(t));
+    (s = e == null ? void 0 : e.webflowOptions) != null && s.customSubmit && (a.preventDefault(), a.stopPropagation(), e.webflowOptions.customSubmit(t));
   }), j(t, e);
 };
 typeof window < "u" && (window.Formous = W);
