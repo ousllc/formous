@@ -155,23 +155,37 @@ Formous({
 
 #### エラーメッセージの表示位置
 - `data-validation="error"`: エラーメッセージ表示要素
-- `data-error="target"`: エラーメッセージの表示位置指定
+- `data-error="target"`: ラジオボタン・チェックボックスグループ用のエラー表示位置指定
+
 ```html
-<!-- 通常のエラー表示（直後） -->
+<!-- 通常の入力フィールドの場合 -->
 <div>
   <input type="text" required />
-  <div data-validation="error"></div>
+  <!-- エラーメッセージは必ず入力要素の兄弟要素として配置 -->
+  <div data-validation="error">必須項目です</div>
 </div>
 
-<!-- エラー表示位置の指定 -->
-<div data-error="target">
-  <input type="text" required />
+<!-- ラジオボタン・チェックボックスグループの場合のみdata-error="target"を使用可能 -->
+<div>
+  <div class="radio-group" data-error="target">
+    <label>
+      <input type="radio" name="gender" required />
+      男性
+    </label>
+    <label>
+      <input type="radio" name="gender" required />
+      女性
+    </label>
+  </div>
+  <!-- ラジオボタン・チェックボックスグループの場合、
+       グループ要素の後にエラーメッセージを配置 -->
+  <div data-validation="error">性別を選択してください</div>
 </div>
-<!-- エラーメッセージは親要素の後に表示 -->
-<div data-validation="error">メールアドレスを入力してください</div>
 ```
 
-**注意**: `data-error="target"`を使用する場合、エラーメッセージ要素は`target`属性を持つ要素の**兄弟要素**として配置する必要があります。これにより、入力要素とエラーメッセージ要素が異なる階層にある場合でも、正しくエラーメッセージを表示できます。
+**注意**: 
+- 通常の入力フィールドの場合、エラーメッセージ要素は必ず入力要素の**兄弟要素**として配置する必要があります。
+- ラジオボタンやチェックボックスグループの場合のみ、`data-error="target"`を使用してグループ要素の後にエラーメッセージを配置できます。これにより、グループ全体に対するエラー表示が可能になります。
 
 #### 特定のバリデーションタイプに対するエラー
 - `data-validation-type="required"`: 特定のバリデーションタイプに対するエラー
